@@ -1,0 +1,1498 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Textile Compliance Navigator</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout concept: a documents-and-instruments desk. Left rail of modules, wide working pane, a woven selvedge stripe as the single decorative detail. */
+:root{
+  --bg:#F4F5F9; --surface:#FFFFFF; --surface-2:#EBEDF5; --ink:#151A33; --ink-2:#4B5272; --line:#D8DBE8;
+  --accent:#2A3EB1; --accent-ink:#FFFFFF; --accent-soft:#E2E6FA; --thread:#B5392E;
+  --ok:#17623D; --ok-bg:#DCF1E4; --warn:#7A4E00; --warn-bg:#FAEBC6; --bad:#9B2424; --bad-bg:#F7DCDC;
+  --f-display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --f-body:'Public Sans','Segoe UI',system-ui,sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1226; --surface:#171B35; --surface-2:#20254A; --ink:#E8EAF6; --ink-2:#A3AAD0; --line:#2D3363;
+    --accent:#8C9CFF; --accent-ink:#0F1226; --accent-soft:#252C5C; --thread:#E2685C;
+    --ok:#6FD3A0; --ok-bg:#16352A; --warn:#F2C063; --warn-bg:#3A2D0F; --bad:#F59A9A; --bad-bg:#3E1A1F;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1226; --surface:#171B35; --surface-2:#20254A; --ink:#E8EAF6; --ink-2:#A3AAD0; --line:#2D3363;
+  --accent:#8C9CFF; --accent-ink:#0F1226; --accent-soft:#252C5C; --thread:#E2685C;
+  --ok:#6FD3A0; --ok-bg:#16352A; --warn:#F2C063; --warn-bg:#3A2D0F; --bad:#F59A9A; --bad-bg:#3E1A1F;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--f-body);margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+.shell{max-width:1260px;margin:0 auto;padding-block:0 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3,h4{font-family:var(--f-display);font-weight:700;line-height:1.15;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:clamp(28px,4.4vw,44px)}
+h2{font-size:clamp(22px,2.6vw,30px)}
+h3{font-size:18px}
+h4{font-size:15px}
+p{margin:0}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+code,.mono{font-family:var(--f-mono);font-size:.92em}
+.muted{color:var(--ink-2)}
+.small{font-size:13px}
+.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-2);font-weight:600}
+
+/* header */
+.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between;padding-block:22px 14px}
+.brand{display:flex;flex-direction:column;gap:2px}
+.brand b{font-family:var(--f-display);font-size:20px;letter-spacing:-.01em}
+.brand span{font-size:13px;color:var(--ink-2)}
+.snap{font-size:12.5px;color:var(--ink-2);border:1px solid var(--line);background:var(--surface);padding:6px 10px;border-radius:6px;display:inline-flex;gap:8px;align-items:center}
+.snap i{width:8px;height:8px;border-radius:50%;background:var(--ok);display:inline-block}
+.selvedge{height:7px;border-radius:1px;background:repeating-linear-gradient(90deg,var(--accent) 0 3px,transparent 3px 6px,var(--accent) 6px 9px,transparent 9px 12px,var(--thread) 12px 14px,transparent 14px 20px);opacity:.9;margin-bottom:22px}
+
+/* layout */
+.layout{display:grid;grid-template-columns:minmax(0,1fr);gap:20px}
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);display:flex;gap:6px;overflow-x:auto;padding:8px 0;margin:0 -2px;border-bottom:1px solid var(--line);scrollbar-width:thin}
+.nav a{flex:0 0 auto;text-decoration:none;color:var(--ink-2);padding:8px 12px;border-radius:6px;font-weight:500;font-size:14px;white-space:nowrap;border:1px solid transparent}
+.nav a:hover{background:var(--surface-2);color:var(--ink)}
+.nav a[aria-current="page"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.nav .grp{display:none}
+@media (min-width:920px){
+  .layout{grid-template-columns:208px minmax(0,1fr);gap:40px;align-items:start}
+  .nav{top:16px;flex-direction:column;overflow:visible;border-bottom:0;padding:0;margin:0;background:transparent;gap:2px}
+  .nav a{padding:9px 12px;white-space:normal}
+  .nav .grp{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-2);padding:14px 12px 4px;font-weight:600}
+  .nav .grp:first-child{padding-top:0}
+}
+main{min-width:0}
+.view{display:flex;flex-direction:column;gap:22px}
+.pagehead{display:flex;flex-direction:column;gap:8px;max-width:760px}
+.pagehead p{color:var(--ink-2)}
+
+/* primitives */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px}
+.card.flat{background:transparent;border-style:dashed}
+.stack{display:flex;flex-direction:column;gap:12px}
+.stack-lg{display:flex;flex-direction:column;gap:20px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px}
+.split{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;align-items:start}
+@media (min-width:1100px){.split{grid-template-columns:minmax(0,360px) minmax(0,1fr)}.split.even{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.btn{font:inherit;font-weight:600;font-size:14px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);padding:8px 14px;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.small{padding:5px 10px;font-size:13px}
+.btn:hover{filter:brightness(1.08)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.link{background:none;border:0;padding:0;color:var(--accent);cursor:pointer;font:inherit;text-decoration:underline}
+
+label.f{display:flex;flex-direction:column;gap:5px;font-size:13.5px;font-weight:600}
+label.f .hint,.hint{font-weight:400;color:var(--ink-2);font-size:12.5px}
+input[type=text],input[type=number],select,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:64px}
+input[type=number]{font-variant-numeric:tabular-nums}
+fieldset{border:0;padding:0;margin:0;min-width:0}
+legend{font-size:13.5px;font-weight:600;padding:0;margin-bottom:6px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg label{position:relative}
+.seg input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0}
+.seg span{display:inline-block;padding:6px 11px;border:1px solid var(--line);border-radius:6px;background:var(--surface);font-size:13.5px;font-weight:500}
+.seg input:checked + span{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+.seg input:focus-visible + span{outline:2px solid var(--accent);outline-offset:2px}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:14px}
+.chk input{margin-top:3px}
+
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:3px 9px;border-radius:99px;white-space:nowrap;border:1px solid transparent}
+.pill.applies{background:var(--warn-bg);color:var(--warn)}
+.pill.no{background:var(--ok-bg);color:var(--ok)}
+.pill.future{background:var(--accent-soft);color:var(--accent)}
+.pill.und{background:transparent;color:var(--ink);border:1px dashed var(--ink-2)}
+.pill.info{background:var(--surface-2);color:var(--ink-2)}
+.pill.out{background:transparent;color:var(--ink-2);border-color:var(--line)}
+.pill.bad{background:var(--bad-bg);color:var(--bad)}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.plan{background:var(--accent-soft);color:var(--accent)}
+.tag{font-family:var(--f-mono);font-size:11.5px;padding:1px 6px;border-radius:4px;background:var(--surface-2);color:var(--ink-2);text-decoration:none}
+a.tag:hover{background:var(--accent-soft);color:var(--accent)}
+
+.callout{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--surface);border-radius:6px;padding:12px 14px;font-size:14px}
+.callout.warn{border-left-color:var(--warn);background:var(--warn-bg);color:var(--ink)}
+.callout.bad{border-left-color:var(--bad);background:var(--bad-bg);color:var(--ink)}
+.callout b{font-weight:600}
+.exbar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;background:var(--warn-bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:14px}
+
+/* tables */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:9px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);font-weight:600;background:var(--surface-2);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+th.num{text-transform:none}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f-mono);white-space:nowrap}
+
+/* screening results */
+.res{display:flex;flex-direction:column;gap:12px}
+.tally{display:flex;flex-wrap:wrap;gap:8px}
+.rc{display:flex;flex-direction:column;gap:10px}
+.rc header{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between}
+.rc h3{font-size:17px}
+.rc dl{margin:0;display:grid;grid-template-columns:minmax(0,1fr);gap:8px 16px}
+@media (min-width:640px){.rc dl{grid-template-columns:130px minmax(0,1fr)}}
+.rc dt{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-2);font-weight:600;padding-top:2px}
+.rc dd{margin:0;font-size:14.5px}
+.rc ul{margin:0;padding-left:18px}
+.rc li{margin:2px 0}
+.facts{display:flex;flex-wrap:wrap;gap:6px}
+.facts .tag{font-size:12px}
+
+/* start */
+.hero{display:flex;flex-direction:column;gap:14px;max-width:780px}
+.hero p.lead{font-size:17px;color:var(--ink-2)}
+.tri{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:14px}
+.tri .card{display:flex;flex-direction:column;gap:8px}
+.route{counter-reset:r;list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0}
+.route li{counter-increment:r;display:grid;grid-template-columns:32px minmax(0,1fr);gap:4px 12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.route li:last-child{border-bottom:0}
+.route li::before{content:counter(r);font-family:var(--f-mono);font-size:13px;width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:600}
+.meter{height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--accent);width:0}
+.prog{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:14px}
+.prog a{text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:8px;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.prog a:hover{border-color:var(--accent)}
+.prog b{font-family:var(--f-display);font-size:24px}
+
+/* dates */
+.tl{list-style:none;margin:0;padding:0;border-left:2px solid var(--line);margin-left:6px;display:flex;flex-direction:column;gap:0}
+.tl li{position:relative;padding:0 0 22px 22px}
+.tl li::before{content:"";position:absolute;left:-7px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--accent)}
+.tl li.plan::before{border-style:dashed}
+.tl li.today::before{background:var(--thread);border-color:var(--thread)}
+.tl li.past .what{color:var(--ink-2)}
+.tl .when{font-family:var(--f-mono);font-size:13px;font-weight:500}
+.tl .what{margin-top:3px;max-width:68ch}
+.tl .today-bar{font-weight:600;color:var(--thread);font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13px;font-weight:500;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:5px 11px;border-radius:99px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+
+/* inventory rows */
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.s3row{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding:14px 0;border-bottom:1px solid var(--line)}
+.s3row:last-child{border-bottom:0}
+@media (min-width:860px){.s3row{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}}
+.s3row .ttl{display:flex;gap:10px;align-items:baseline}
+.s3row .n{font-family:var(--f-mono);font-size:13px;color:var(--ink-2);min-width:22px}
+.s3row .ctl{display:flex;flex-direction:column;gap:8px}
+.s3row textarea{min-height:48px}
+.warnline{font-size:12.5px;color:var(--warn);font-weight:600}
+details{border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+details summary{cursor:pointer;padding:11px 14px;font-weight:600;font-size:14.5px}
+details .in{padding:0 14px 14px;font-size:14.5px;display:flex;flex-direction:column;gap:8px}
+details .in ul{margin:0;padding-left:18px}
+
+/* calc */
+.calcpv{font-family:var(--f-mono);font-size:13px;background:var(--surface-2);border-radius:6px;padding:10px 12px;line-height:1.6;overflow-x:auto}
+.calcpv .big{font-size:20px;font-weight:500;font-family:var(--f-display)}
+.err{color:var(--bad);font-weight:600}
+.ok-t{color:var(--ok);font-weight:600}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:14px}
+.qa{display:flex;flex-direction:column;gap:10px}
+.qa .say{font-family:var(--f-display);font-size:17px;line-height:1.25;font-weight:600}
+.qa dl{margin:0;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.qa dt{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-2);font-weight:600}
+.qa dd{margin:0}
+pre.md{font-family:var(--f-mono);font-size:12.5px;line-height:1.55;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:14px;overflow:auto;max-height:520px;white-space:pre-wrap;word-break:break-word;margin:0}
+.label-big{font-family:var(--f-display);font-size:28px;font-weight:700}
+.copybox{position:fixed;inset:auto 0 0 0;z-index:40;background:var(--surface);border-top:2px solid var(--accent);padding:14px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:8px;box-shadow:0 -8px 30px rgba(0,0,0,.18)}
+.copybox textarea{min-height:120px;font-family:var(--f-mono);font-size:12.5px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:99px;font-size:14px;z-index:50;font-weight:500}
+@media (prefers-reduced-motion:no-preference){.view{animation:in .18s ease-out}@keyframes in{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}}
+</style>
+
+<div class="shell">
+  <div class="top">
+    <div class="brand">
+      <b>Textile Compliance Navigator</b>
+      <span>Climate-related European requirements for textile exporters</span>
+    </div>
+    <div class="snap" title="Official sources were checked on this date. Law and standards change."><i></i>Sources checked 30 Oct 2026</div>
+  </div>
+  <div class="selvedge" aria-hidden="true"></div>
+
+  <div class="layout">
+    <nav class="nav" id="nav" aria-label="Portal sections">
+      <div class="grp">Understand</div>
+      <a href="#start" data-view="start">Start here</a>
+      <a href="#screen" data-view="screen">Regulatory screen</a>
+      <a href="#dates" data-view="dates">Key dates</a>
+      <a href="#claims" data-view="claims">Buyer requests and claims</a>
+      <div class="grp">Measure</div>
+      <a href="#inventory" data-view="inventory">Inventory tools</a>
+      <a href="#calculator" data-view="calculator">Calculator and register</a>
+      <div class="grp">Report</div>
+      <a href="#report" data-view="report">Report draft</a>
+      <a href="#sources" data-view="sources">Sources and limits</a>
+    </nav>
+
+    <main>
+      <!-- START -->
+      <section class="view" id="v-start" hidden>
+        <div class="hero">
+          <span class="eyebrow">For mills, garment makers, integrated groups and traders</span>
+          <h1>Which European climate rules actually reach your textile business?</h1>
+          <p class="lead">Buyers send questionnaires that mix law, contract terms and voluntary schemes. This portal keeps them apart, so you know what binds you, what a customer is asking as a commercial matter, and what your emissions inventory can and cannot prove.</p>
+          <div class="row">
+            <a class="btn" href="#screen">Run the regulatory screen</a>
+            <a class="btn ghost" href="#claims">Decode a buyer request</a>
+          </div>
+        </div>
+
+        <div class="tri">
+          <div class="card">
+            <span class="eyebrow">Accounting</span>
+            <h3>How you measure emissions</h3>
+            <p class="muted">GHG Protocol boundaries, scopes, data coverage and factors. Voluntary unless a law, contract or scheme requires it. A limited Scope 1 and 2 inventory is not a full Scope 3 inventory, and neither is a product footprint.</p>
+            <a href="#inventory">Open the inventory tools</a>
+          </div>
+          <div class="card">
+            <span class="eyebrow">Legal applicability</span>
+            <h3>Whether a rule binds you</h3>
+            <p class="muted">CSRD, CSDDD, CBAM and the EU ecodesign framework each depend on the entity, turnover, goods and dates. Selling to an EU buyer does not by itself make you subject to their duties.</p>
+            <a href="#screen">Screen your obligations</a>
+          </div>
+          <div class="card">
+            <span class="eyebrow">Commercial requirements</span>
+            <h3>What a customer asks for</h3>
+            <p class="muted">Buyer contracts, supplier portals, CDP, SBTi or Higg requests. These can apply even when no law binds you, and each has its own version and deadline.</p>
+            <a href="#claims">Check a request or claim</a>
+          </div>
+        </div>
+
+        <div id="progress" class="prog"></div>
+
+        <div class="split even">
+          <div class="card">
+            <h3 style="margin-bottom:6px">A sensible route through the portal</h3>
+            <ol class="route">
+              <li><div><b>Screen what applies.</b> <span class="muted">Enter your entity, EU sales and goods. You get a status per instrument and the checks still needed.</span></div></li>
+              <li><div><b>Decode the buyer request.</b> <span class="muted">Find out whether it is law, contract or a voluntary scheme, and what to prepare.</span></div></li>
+              <li><div><b>Map sources and Scope 3.</b> <span class="muted">Work through all 15 Scope 3 categories and track the evidence you hold.</span></div></li>
+              <li><div><b>Calculate with a traceable trail.</b> <span class="muted">Unit-checked lines, your own sourced factors, gross results by scope.</span></div></li>
+              <li><div><b>Label and write up.</b> <span class="muted">Draft, screening estimate, reviewed or externally assured, based on the evidence you actually have.</span></div></li>
+            </ol>
+          </div>
+          <div class="stack">
+            <div class="callout warn"><b>What this portal will not do.</b> It does not certify anything, does not produce a GHG Protocol certificate and never returns a blanket "EU compliant" result. It supplies no emission factors: you enter factors from sources you can cite. Chemical restrictions, fibre labelling, packaging, waste, consumer claims and labour rules are outside it.</div>
+            <div class="callout"><b>Your data stays here.</b> Everything you enter is kept in this browser only. Nothing is sent anywhere. Use the copy buttons to take results into your own files.</div>
+            <div class="callout"><b>Dated snapshot.</b> Legal and standards content reflects official sources checked on 30 October 2026. Check <a href="#sources">Sources and limits</a> before relying on any conclusion, and use operative legal text for a definitive answer about your entity.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN -->
+      <section class="view" id="v-screen" hidden>
+        <div class="pagehead">
+          <span class="eyebrow">Legal applicability</span>
+          <h2>Regulatory screen</h2>
+          <p>Answer what you know. Leave unknown figures blank and the result will say undetermined rather than guess. This is a triage of climate-related EU instruments, not a legal opinion and not a full market-access checklist.</p>
+        </div>
+        <div class="exbar" id="exbar">
+          <span id="exmsg"></span>
+          <span class="row">
+            <label class="hint" for="preset" style="display:flex;gap:6px;align-items:center">Load example
+              <select id="preset" style="width:auto">
+                <option value="">Choose…</option>
+                <option value="small">Garment maker, EUR 40m EU sales</option>
+                <option value="bigeu">Non-EU group, EUR 1.6bn EU sales</option>
+                <option value="eusub">EU entity of a large group</option>
+              </select>
+            </label>
+            <button class="btn small" type="button" id="clearProfile">Start with my facts</button>
+          </span>
+        </div>
+        <div class="split">
+          <form class="card stack-lg" id="screenForm" autocomplete="off" onsubmit="return false">
+            <div class="stack">
+              <h3>Your business</h3>
+              <label class="f" for="p-model">Business model
+                <select id="p-model" data-bind="profile.model">
+                  <option value="mill">Spinning, weaving or knitting mill</option>
+                  <option value="wet">Wet processor (dyeing, printing, finishing)</option>
+                  <option value="garment">Garment or made-up maker</option>
+                  <option value="integrated">Integrated group</option>
+                  <option value="trader">Trading exporter</option>
+                </select>
+              </label>
+              <label class="f" for="p-country">Country where the selling entity is established
+                <input type="text" id="p-country" data-bind="profile.country" placeholder="Any country">
+              </label>
+            </div>
+
+            <fieldset class="stack">
+              <legend>Where do you sell?</legend>
+              <div class="stack" style="gap:6px">
+                <label class="chk"><input type="checkbox" data-bind="profile.mk.eu"> EU Member States</label>
+                <label class="chk"><input type="checkbox" data-bind="profile.mk.uk"> United Kingdom</label>
+                <label class="chk"><input type="checkbox" data-bind="profile.mk.ch"> Switzerland</label>
+                <label class="chk"><input type="checkbox" data-bind="profile.mk.oth"> Other European countries</label>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Is the entity that sells to Europe established in an EU Member State?</legend>
+              <div class="seg">
+                <label><input type="radio" name="entityEU" value="yes" data-bind="profile.entityEU"><span>Yes</span></label>
+                <label><input type="radio" name="entityEU" value="no" data-bind="profile.entityEU"><span>No</span></label>
+                <label><input type="radio" name="entityEU" value="unsure" data-bind="profile.entityEU"><span>Not sure</span></label>
+              </div>
+            </fieldset>
+
+            <fieldset id="g-euEntity">
+              <legend>Does your group have a subsidiary or branch in the EU?</legend>
+              <div class="seg">
+                <label><input type="radio" name="euEntity" value="yes" data-bind="profile.euEntity"><span>Yes</span></label>
+                <label><input type="radio" name="euEntity" value="no" data-bind="profile.euEntity"><span>No</span></label>
+                <label><input type="radio" name="euEntity" value="unsure" data-bind="profile.euEntity"><span>Not sure</span></label>
+              </div>
+            </fieldset>
+
+            <div class="stack">
+              <h3>Size (leave blank if unknown)</h3>
+              <div class="grid-2">
+                <label class="f" for="p-emp" id="g-emp">Average employees
+                  <input type="number" min="0" id="p-emp" data-bind="profile.employees" inputmode="numeric">
+                  <span class="hint">EU entity or group being tested</span>
+                </label>
+                <label class="f" for="p-ww" id="g-ww">Worldwide net turnover, EUR m
+                  <input type="number" min="0" id="p-ww" data-bind="profile.wwTurnover" inputmode="decimal">
+                  <span class="hint">Of the EU entity or group</span>
+                </label>
+                <label class="f" for="p-eu" id="g-eu">Net turnover generated in the EU, EUR m
+                  <input type="number" min="0" id="p-eu" data-bind="profile.euTurnover" inputmode="decimal">
+                  <span class="hint">Group-wide. Employee numbers are not used in the non-EU tests.</span>
+                </label>
+                <label class="f" for="p-sub" id="g-sub">EU subsidiary or branch net turnover, EUR m
+                  <input type="number" min="0" id="p-sub" data-bind="profile.subTurnover" inputmode="decimal">
+                </label>
+              </div>
+            </div>
+
+            <fieldset>
+              <legend>Who imports your goods into the EU?</legend>
+              <div class="seg">
+                <label><input type="radio" name="importer" value="buyer" data-bind="profile.importer"><span>My EU buyer</span></label>
+                <label><input type="radio" name="importer" value="us" data-bind="profile.importer"><span>We, or our EU entity</span></label>
+                <label><input type="radio" name="importer" value="unsure" data-bind="profile.importer"><span>Not sure</span></label>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Do you ship cement, iron or steel, aluminium, fertiliser, electricity or hydrogen goods? Include metal goods supplied with textiles.</legend>
+              <div class="seg">
+                <label><input type="radio" name="cbamGoods" value="no" data-bind="profile.cbamGoods"><span>No</span></label>
+                <label><input type="radio" name="cbamGoods" value="yes" data-bind="profile.cbamGoods"><span>Yes</span></label>
+                <label><input type="radio" name="cbamGoods" value="unsure" data-bind="profile.cbamGoods"><span>Not sure</span></label>
+              </div>
+            </fieldset>
+
+            <label class="f" for="p-cn">Customs (CN) codes of your main goods
+              <textarea id="p-cn" data-bind="profile.cn" placeholder="6109 10 00, 5208 …"></textarea>
+              <span class="hint">Optional. Separate with commas or new lines. Only a chapter-level pointer is given.</span>
+            </label>
+          </form>
+
+          <div class="res" id="screenOut" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <!-- DATES -->
+      <section class="view" id="v-dates" hidden>
+        <div class="pagehead">
+          <span class="eyebrow">Legal applicability</span>
+          <h2>Key dates</h2>
+          <p>Publication, entry into force and application are different events, and a planned adoption year is not a compliance deadline. Each item says which kind it is.</p>
+        </div>
+        <div class="chips" id="dateChips" role="group" aria-label="Filter by instrument"></div>
+        <ol class="tl" id="tl"></ol>
+        <div class="callout"><b>Not in this timeline.</b> Year-by-year CSRD application dates, national transposition status and ESRS amendments were not part of the dated snapshot. Check them for your reporting year. Items without an exact day are placed by quarter or year, so their order within that period is approximate.</div>
+      </section>
+
+      <!-- CLAIMS -->
+      <section class="view" id="v-claims" hidden>
+        <div class="pagehead">
+          <span class="eyebrow">Commercial requirements and claims</span>
+          <h2>Buyer requests and claims</h2>
+          <p>Common things buyers ask, and common things suppliers say. Each card shows what the statement really means and what to prepare.</p>
+        </div>
+        <div class="row" style="justify-content:space-between">
+          <div class="chips" id="claimChips" role="group" aria-label="Filter requests"></div>
+          <label class="f" for="claimQ" style="min-width:220px;flex:0 1 280px"><span class="hint">Search</span>
+            <input type="text" id="claimQ" placeholder="CBAM, Scope 2, passport…">
+          </label>
+        </div>
+        <div class="cards" id="claimCards"></div>
+      </section>
+
+      <!-- INVENTORY -->
+      <section class="view" id="v-inventory" hidden>
+        <div class="pagehead">
+          <span class="eyebrow">Accounting</span>
+          <h2>Inventory tools</h2>
+          <p>Where textile emissions sit across the GHG Protocol scopes, a screen of all 15 Scope 3 categories, and an evidence tracker. Small categories are not assumed to be zero.</p>
+        </div>
+        <div class="tabs" role="tablist" id="invTabs">
+          <button class="chip" role="tab" data-tab="map" aria-pressed="true">Source map</button>
+          <button class="chip" role="tab" data-tab="scope3" aria-pressed="false">Scope 3 screen</button>
+          <button class="chip" role="tab" data-tab="evidence" aria-pressed="false">Evidence tracker</button>
+        </div>
+
+        <div id="t-map" class="stack-lg">
+          <div class="tw"><table>
+            <thead><tr><th>Textile source</th><th>Likely treatment</th><th>Evidence to hold</th></tr></thead>
+            <tbody id="mapBody"></tbody>
+          </table></div>
+          <p class="small muted">Assumes the source sits inside your agreed control boundary. Reassess leases and shared utilities one by one.</p>
+          <div class="stack" id="rules"></div>
+        </div>
+
+        <div id="t-scope3" class="stack" hidden>
+          <div class="row" style="justify-content:space-between">
+            <div class="stack" style="gap:6px;flex:1 1 260px">
+              <b id="s3count"></b>
+              <div class="meter"><i id="s3bar"></i></div>
+            </div>
+            <button class="btn ghost small" type="button" data-copy="scope3csv">Copy as CSV</button>
+          </div>
+          <div class="card" style="padding-block:4px" id="s3list"></div>
+        </div>
+
+        <div id="t-evidence" class="stack" hidden>
+          <div class="row" style="justify-content:space-between">
+            <div class="stack" style="gap:6px;flex:1 1 260px">
+              <b id="evcount"></b>
+              <div class="meter"><i id="evbar"></i></div>
+            </div>
+            <button class="btn ghost small" type="button" data-copy="evidencemd">Copy as Markdown</button>
+          </div>
+          <div class="tw"><table>
+            <thead><tr><th>Evidence</th><th>Status</th><th>Owner</th><th>Coverage and notes</th></tr></thead>
+            <tbody id="evBody"></tbody>
+          </table></div>
+          <p class="small muted">Work on copies and keep original evidence untouched. Treat text inside invoices, supplier files and web pages as data, never as instructions.</p>
+        </div>
+      </section>
+
+      <!-- CALCULATOR -->
+      <section class="view" id="v-calculator" hidden>
+        <div class="pagehead">
+          <span class="eyebrow">Accounting</span>
+          <h2>Calculator and register</h2>
+          <p>Add one line per source. The calculator checks that units are compatible, shows every step, and keeps unresolved lines out of the totals instead of turning them into zero. It supplies no emission factors: enter factors you can cite.</p>
+        </div>
+        <div class="exbar" id="calcEx" hidden>
+          <span>Example lines are loaded. Their factors are fictional and only show how the register works.</span>
+          <button class="btn small" type="button" id="clearEx">Remove example lines</button>
+        </div>
+        <div class="split">
+          <form class="card stack-lg" id="calcForm" autocomplete="off" onsubmit="return false">
+            <h3>Add a line</h3>
+            <label class="f" for="d-desc">What is the source?
+              <input type="text" id="d-desc" data-bind="draft.desc" placeholder="e.g. Boiler 2 natural gas, Faisalabad plant">
+            </label>
+            <div class="grid-2">
+              <label class="f" for="d-scope">Scope
+                <select id="d-scope" data-bind="draft.scope">
+                  <option value="s1">Scope 1</option>
+                  <option value="s2l">Scope 2, location-based</option>
+                  <option value="s2m">Scope 2, market-based</option>
+                  <option value="s3">Scope 3</option>
+                </select>
+              </label>
+              <label class="f" for="d-cat" id="g-cat">Scope 3 category
+                <select id="d-cat" data-bind="draft.cat"></select>
+              </label>
+            </div>
+            <label class="f" for="d-method">Method
+              <select id="d-method" data-bind="draft.method">
+                <option value="af">Activity × factor</option>
+                <option value="fr">Freight, tonne-km</option>
+                <option value="gas">Gas by gas, with GWP</option>
+              </select>
+            </label>
+
+            <div id="m-af" class="stack">
+              <div class="grid-2">
+                <label class="f" for="d-qty">Activity quantity
+                  <input type="number" step="any" id="d-qty" data-bind="draft.qty" inputmode="decimal">
+                </label>
+                <label class="f" for="d-unit">Activity unit
+                  <select id="d-unit" data-bind="draft.unit"></select>
+                </label>
+              </div>
+              <div class="grid-2">
+                <label class="f" for="d-fac">Factor value
+                  <input type="number" step="any" id="d-fac" data-bind="draft.fac" inputmode="decimal">
+                </label>
+                <label class="f" for="d-facnum">Factor is in
+                  <select id="d-facnum" data-bind="draft.facNum">
+                    <option value="kg">kg CO2e</option>
+                    <option value="t">t CO2e</option>
+                  </select>
+                </label>
+              </div>
+              <label class="f" for="d-facden">Factor is per
+                <select id="d-facden" data-bind="draft.facDen"></select>
+              </label>
+            </div>
+
+            <div id="m-fr" class="stack" hidden>
+              <div class="grid-2">
+                <label class="f" for="d-mass">Shipped mass
+                  <input type="number" step="any" id="d-mass" data-bind="draft.mass" inputmode="decimal">
+                </label>
+                <label class="f" for="d-massu">Mass unit
+                  <select id="d-massu" data-bind="draft.massU"><option value="t">tonne</option><option value="kg">kg</option></select>
+                </label>
+              </div>
+              <div class="grid-2">
+                <label class="f" for="d-dist">Distance, km
+                  <input type="number" step="any" id="d-dist" data-bind="draft.dist" inputmode="decimal">
+                </label>
+                <label class="f" for="d-frfac">Factor, kg CO2e per tonne-km
+                  <input type="number" step="any" id="d-frfac" data-bind="draft.frFac" inputmode="decimal">
+                </label>
+              </div>
+              <p class="hint">Do not add another load factor if the dataset already includes one.</p>
+            </div>
+
+            <div id="m-gas" class="stack" hidden>
+              <p class="hint">Enter each gas mass in kg and the GWP from the source the applicable standard requires. If a figure is already in CO2e, use the activity × factor method instead so it is not multiplied twice.</p>
+              <div class="grid-2">
+                <label class="f" for="d-gco2">CO2, kg<input type="number" step="any" id="d-gco2" data-bind="draft.g.co2.m"></label>
+                <label class="f" for="d-wco2">GWP of CO2<input type="number" step="any" id="d-wco2" data-bind="draft.g.co2.w"></label>
+                <label class="f" for="d-gch4">CH4, kg<input type="number" step="any" id="d-gch4" data-bind="draft.g.ch4.m"></label>
+                <label class="f" for="d-wch4">GWP of CH4<input type="number" step="any" id="d-wch4" data-bind="draft.g.ch4.w"></label>
+                <label class="f" for="d-gn2o">N2O, kg<input type="number" step="any" id="d-gn2o" data-bind="draft.g.n2o.m"></label>
+                <label class="f" for="d-wn2o">GWP of N2O<input type="number" step="any" id="d-wn2o" data-bind="draft.g.n2o.w"></label>
+              </div>
+              <label class="f" for="d-gwpsrc">GWP source and time horizon
+                <input type="text" id="d-gwpsrc" data-bind="draft.gwpSrc" placeholder="Report, edition, horizon">
+              </label>
+            </div>
+
+            <label class="f" for="d-src">Factor source or ID <span class="hint">Publisher, title, year, geography. Use the factory's own grid, not the destination market's.</span>
+              <input type="text" id="d-src" data-bind="draft.facSrc" placeholder="Where does the factor come from?">
+            </label>
+
+            <details>
+              <summary>More details for the register</summary>
+              <div class="in">
+                <div class="grid-2">
+                  <label class="f" for="d-site">Site or entity<input type="text" id="d-site" data-bind="draft.site"></label>
+                  <label class="f" for="d-evid">Evidence ID<input type="text" id="d-evid" data-bind="draft.evid" placeholder="Invoice, meter log, supplier file"></label>
+                  <label class="f" for="d-dstat">Data status
+                    <select id="d-dstat" data-bind="draft.dstat">
+                      <option value="measured">Measured or metered</option>
+                      <option value="estimated">Estimated</option>
+                      <option value="spend">Spend-based or average data</option>
+                      <option value="unknown">Not yet known</option>
+                    </select>
+                  </label>
+                  <label class="f" for="d-cov">Coverage of the year, %<input type="number" min="0" max="100" id="d-cov" data-bind="draft.cov"></label>
+                </div>
+                <label class="f" for="d-gap">Uncertainty or gap<textarea id="d-gap" data-bind="draft.gap"></textarea></label>
+              </div>
+            </details>
+
+            <div class="calcpv" id="calcPv" aria-live="polite"></div>
+            <div class="row">
+              <button class="btn" type="button" id="addLine">Add to register</button>
+              <span class="hint" id="addHint"></span>
+            </div>
+          </form>
+
+          <div class="stack-lg">
+            <div class="stack">
+              <div class="row" style="justify-content:space-between"><h3>Results by scope</h3><span class="row"><button class="btn ghost small" type="button" data-copy="registercsv">Copy register as CSV</button><button class="btn small" type="button" data-dl="xlsx" hidden>Download Excel workbook</button></span></div>
+              <div class="tw"><table>
+                <thead><tr><th>Metric</th><th class="num">tCO2e</th><th>Lines</th></tr></thead>
+                <tbody id="totBody"></tbody>
+              </table></div>
+              <div id="totNotes" class="stack" style="gap:8px"></div>
+            </div>
+            <div class="stack">
+              <h3>Register</h3>
+              <div class="tw"><table>
+                <thead><tr><th>Source</th><th>Scope</th><th>Working</th><th class="num">tCO2e</th><th></th></tr></thead>
+                <tbody id="lineBody"></tbody>
+              </table></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card stack">
+          <h3>Intensity and garment screening estimate</h3>
+          <p class="muted small">Define the numerator and the denominator, and keep the absolute total alongside any intensity.</p>
+          <div class="grid-3">
+            <label class="f" for="i-num">Emissions numerator, tCO2e
+              <input type="number" step="any" id="i-num" data-bind="intensity.num">
+              <span class="hint"><button type="button" class="link" id="fillNum">Use Scope 1 + 2 location-based from the register</button></span>
+            </label>
+            <label class="f" for="i-den">Production denominator
+              <input type="number" step="any" id="i-den" data-bind="intensity.den">
+            </label>
+            <label class="f" for="i-unit">Denominator is
+              <select id="i-unit" data-bind="intensity.unit">
+                <option value="kg">kg of output</option>
+                <option value="t">tonnes of output</option>
+                <option value="m">metres of fabric</option>
+                <option value="pcs">pieces</option>
+              </select>
+            </label>
+          </div>
+          <label class="f" for="i-def">What counts as production? <span class="hint">Output, shipped mass, or another measure</span>
+            <input type="text" id="i-def" data-bind="intensity.def" placeholder="e.g. finished fabric shipped, net of scrap">
+          </label>
+          <label class="f" for="i-garm" style="max-width:260px">Garment weight, g (optional)
+            <input type="number" step="any" id="i-garm" data-bind="intensity.garm">
+          </label>
+          <div class="calcpv" id="intOut" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <!-- REPORT -->
+      <section class="view" id="v-report" hidden>
+        <div class="pagehead">
+          <span class="eyebrow">Report</span>
+          <h2>Report draft</h2>
+          <p>Fill in the engagement facts, see which label your evidence supports, and copy a Markdown draft that follows the standard report layout. Blank means unknown.</p>
+        </div>
+        <div class="split">
+          <form class="card stack-lg" id="engForm" autocomplete="off" onsubmit="return false">
+            <h3>Engagement facts</h3>
+            <label class="f" for="e-co">Company or group and reporting entity<input type="text" id="e-co" data-bind="eng.company"></label>
+            <div class="grid-2">
+              <label class="f" for="e-per">Reporting period<input type="text" id="e-per" data-bind="eng.period" placeholder="e.g. 1 Jul 2025 to 30 Jun 2026"></label>
+              <label class="f" for="e-base">Base year<input type="text" id="e-base" data-bind="eng.baseYear"></label>
+            </div>
+            <label class="f" for="e-app">Consolidation approach
+              <select id="e-app" data-bind="eng.approach">
+                <option value="">Not yet decided</option>
+                <option value="Operational control">Operational control</option>
+                <option value="Financial control">Financial control</option>
+                <option value="Equity share">Equity share</option>
+              </select>
+            </label>
+            <label class="f" for="e-buy">Buyer methodology and version, if any<input type="text" id="e-buy" data-bind="eng.buyer"></label>
+            <div class="stack">
+              <h4>Review and assurance</h4>
+              <label class="chk"><input type="checkbox" data-bind="eng.mostlyEst"> Results rest mainly on estimates, averages, spend factors or a facility intensity</label>
+              <div class="grid-2">
+                <label class="f" for="e-rev">Reviewed by (name)<input type="text" id="e-rev" data-bind="eng.reviewer"></label>
+                <label class="f" for="e-revs">What was checked<input type="text" id="e-revs" data-bind="eng.reviewScope" placeholder="e.g. calculations and factor sources"></label>
+                <label class="f" for="e-ap">External assurance provider<input type="text" id="e-ap" data-bind="eng.assuranceProvider"></label>
+                <label class="f" for="e-as">Assurance scope and level<input type="text" id="e-as" data-bind="eng.assuranceScope"></label>
+              </div>
+              <label class="chk"><input type="checkbox" data-bind="eng.assuranceStatement"> A signed external assurance statement exists</label>
+            </div>
+          </form>
+          <div class="stack-lg">
+            <div class="card stack" id="labelCard"></div>
+            <div class="stack">
+              <div class="row" style="justify-content:space-between"><h3>Markdown draft</h3><span class="row"><button class="btn small" type="button" data-copy="reportmd">Copy report</button><button class="btn ghost small" type="button" data-dl="xlsx" hidden>Download Excel workbook</button></span></div>
+              <pre class="md" id="reportMd" tabindex="0"></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SOURCES -->
+      <section class="view" id="v-sources" hidden>
+        <div class="pagehead">
+          <span class="eyebrow">Basis of this portal</span>
+          <h2>Sources and limits</h2>
+          <p>Every legal and accounting statement in this portal traces to one of these official sources, checked on 30 October 2026. The source IDs appear on result cards.</p>
+        </div>
+        <div class="callout warn"><b>Read before relying on any result.</b> This is a screening aid built from a dated source snapshot, not a live legal database. It is not a legal opinion, not an audit of EU market access, and not certification or assurance. Official summaries are screening aids. Use operative legal text and national rules for a definitive conclusion about your entity.</div>
+        <div class="stack"><h3>Accounting standards</h3>
+          <div class="tw"><table><thead><tr><th>ID</th><th>Source and version</th><th>Used for</th></tr></thead><tbody id="srcAcc"></tbody></table></div></div>
+        <div class="stack"><h3>EU law and implementation</h3>
+          <div class="tw"><table><thead><tr><th>ID</th><th>Source</th><th>Verification result and limit</th></tr></thead><tbody id="srcEU"></tbody></table></div></div>
+        <div class="split even">
+          <div class="card stack">
+            <h3>Limits to keep in mind</h3>
+            <ul class="small" style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px">
+              <li>CSRD and CSDDD thresholds shown are triage indicators from institutional summaries. Exact tests, aggregation rules, reference years and national implementation need the operative text.</li>
+              <li>Directive (EU) 2026/470 was not read in full when the snapshot was prepared. Its details come from the Council and Commission summaries.</li>
+              <li>The portal does not verify all current ESRS amendments, national laws or customs codes for your company.</li>
+              <li>UK, Switzerland and other European markets have their own law and are not screened here.</li>
+              <li>A planned or proposed measure is not an enacted requirement. This includes the planned DPP textile act, any proposed CBAM scope expansion, and the GHG Protocol and ISO consolidated standard.</li>
+              <li>A GHG inventory alone does not show compliance with CSRD, CSDDD, CBAM or product rules.</li>
+            </ul>
+          </div>
+          <div class="card stack">
+            <h3>Keeping a verification log</h3>
+            <p class="small muted">Before a legal or public conformance conclusion, re-check the sources and record, for each: source ID or new source, exact title and version, publication and effective dates, accessed date, URL, article or table, the narrow claim it supports, adopted or proposed status, company facts used, uncertainty and reviewer. Replace stale conclusions explicitly instead of mixing old thresholds with new application dates.</p>
+            <p class="small muted">Built from the textile-ghg-europe skill package. Templates are blank working aids, not official GHG Protocol forms, and no WRI or WBCSD approval is implied.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<div id="toastHost"></div>
+<div id="copyHost"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+(function(){
+'use strict';
+
+/* ---------- helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num=v=>(v===''||v==null||isNaN(Number(v)))?null:Number(v);
+const fmt=(n,d=3)=>n==null?'—':Number(n).toLocaleString('en',{maximumFractionDigits:d});
+const csv=a=>a.map(v=>{v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(',');
+const cmp=(v,t)=>v==null?null:(v>t?'gt':(v===t?'eq':'lt'));
+const uid=()=>Math.random().toString(36).slice(2,9);
+
+/* ---------- reference data (from the skill's references and assets) ---------- */
+const SRC_ACC=[
+ ['G1','GHG Protocol Corporate Standard, revised edition 2004 with later amendments','https://ghgprotocol.org/corporate-standard','Corporate-level accounting. Chapter 3 boundary, chapter 5 base year, chapters 6 to 9 calculation, quality and reporting. Check the required-gases and GWP amendment on the page.'],
+ ['G2','GHG Protocol Scope 2 Guidance, 2015 and corrections','https://ghgprotocol.org/scope-2-guidance','Purchased energy, dual reporting, market-based hierarchy and quality criteria. The page records a consultation that ended 31 January 2026; a consultation is not a replacement standard.'],
+ ['G3','GHG Protocol Corporate Value Chain (Scope 3) Standard, 2011 and corrections','https://ghgprotocol.org/corporate-value-chain-scope-3-standard','The 15 categories, minimum boundaries, data and reporting. Table 5.4 and chapters 6 to 11.'],
+ ['G4','GHG Protocol Product Life Cycle Standard, 2011','https://ghgprotocol.org/product-standard','Product-level boundary and life-cycle methods, separate from corporate Scope 3. Product rules are needed for meaningful comparisons. The page announces joint ISO development, not a final replacement.'],
+ ['G5','GHG Protocol corporate standards development FAQ, 29 July 2026','https://ghgprotocol.org/blog/ghg-protocol-announces-key-standard-development-updates-faq-resource','Consolidated GHG Protocol and ISO corporate standard in development. Consultation planned Q2 2027, final publication planned Q4 2028. These are plans, not current requirements.'],
+ ['G6','GHG Protocol Land Sector and Removals Standard, v1.1','https://ghgprotocol.org/land-sector-and-removals-standard','Published, effective 1 January 2027. Relevant to cotton and other agricultural inputs. Check detailed applicability before any claim.']
+];
+const SRC_EU=[
+ ['E1','Council adopted simplification summary, 24 February 2026','https://www.consilium.europa.eu/en/press/press-releases/2026/02/24/council-signs-off-simplification-of-sustainability-reporting-and-due-diligence-requirements-to-boost-eu-competitiveness/','Adoption, CSRD thresholds, CSDDD changes and removal of the transition-plan obligation. An institutional summary: use the final act and national transposition for legal conclusions.'],
+ ['E2','Commission CSDDD implementation page','https://commission.europa.eu/topics/business-and-industry/company-law-and-corporate-governance/corporate-sustainability-due-diligence_en','Confirms amending Directives 2025/794 and 2026/470, entry into force, EU and non-EU scope distinction and implementation dates. Some wording is simplified; verify the statute\'s exact conditions.'],
+ ['E3','Directive (EU) 2026/470, Official Journal','https://eur-lex.europa.eu/eli/dir/2026/470/oj/eng','Legal-text locator. Automated reading was blocked during preparation, so details were verified through E1 and E2, not by reading the full act. Retrieve it before a definitive opinion.'],
+ ['E4','Commission CBAM portal','https://taxation-customs.ec.europa.eu/carbon-border-adjustment-mechanism_en','Definitive regime from 1 January 2026 and the selected sectors. Follow its links to current Annex I and implementing measures for product-specific decisions.'],
+ ['E5','Commission Digital Product Passport page','https://single-market-economy.ec.europa.eu/single-market/digital-product-passport_en','DPP legal basis and planned 2027 textiles act. The roadmap is not an application deadline.'],
+ ['E6','ESPR, Regulation (EU) 2024/1781','https://eur-lex.europa.eu/eli/reg/2024/1781/eng','Framework legal basis. Articles 4 and 9 link product requirements and DPP information to delegated acts. Recheck the consolidated text and specific measures for actual obligations.']
+];
+
+const S3CATS=[
+ [1,'Purchased goods and services','Fibres, yarn, fabric, chemicals, packaging and subcontract processing','Fibre, yarn, fabric, dyes, packaging and external dyeing or finishing normally sit here. Match the supplier factor boundary (usually cradle-to-gate) to what you bought, or you may count the same emissions twice.'],
+ [2,'Capital goods','Machinery, buildings and other capital purchases','Machinery and buildings bought in the period.'],
+ [3,'Fuel- and energy-related activities not included in Scope 1 or 2','Upstream fuels and purchased energy plus relevant losses','Upstream fuel and electricity emissions and electricity losses. Keep them separate from Scope 1 and 2 generation emissions.'],
+ [4,'Upstream transportation and distribution','Inbound and other purchased freight, including paid outbound logistics','If you buy outbound transport, it normally belongs here. Inspect contracts and actual movements, not Incoterms alone.'],
+ [5,'Waste generated in operations','External waste and wastewater treatment','Treatment you purchase. Owned or controlled wastewater treatment is a Scope 1 question.'],
+ [6,'Business travel','Travel outside owned or controlled vehicles','Flights, hotels and rail for staff and buyers\' visits you pay for.'],
+ [7,'Employee commuting','Employee travel and relevant optional teleworking','Staff transport to your sites, including shuttle services you do not own.'],
+ [8,'Upstream leased assets','Leased operations outside the Scope 1 and 2 boundary','Reassess each lease against your consolidation approach.'],
+ [9,'Downstream transportation and distribution','Downstream logistics not purchased by the reporting company','Shipments you do not pay for. Avoid counting one shipment in both category 4 and 9.'],
+ [10,'Processing of sold products','Fabric or yarn sold for downstream processing','Relevant if you sell fabric or yarn for further manufacturing.'],
+ [11,'Use of sold products','Assess applicable direct and optional indirect use phase','For finished apparel, check whether use emissions are direct or optional indirect under the Scope 3 boundary. Do not treat every laundry scenario the same.'],
+ [12,'End-of-life treatment of sold products','Sold textiles and packaging disposal scenarios','Disposal scenarios for sold textiles and packaging.'],
+ [13,'Downstream leased assets','Assets leased to others outside the Scope 1 and 2 boundary','Only if you lease assets to others.'],
+ [14,'Franchises','Franchise operations outside the Scope 1 and 2 boundary','Do not assume a fabric exporter has franchises or retail operations.'],
+ [15,'Investments','Relevant investments outside the Scope 1 and 2 boundary','Do not assume investments exist. Record why if none.']
+];
+const S3ST={'':'Not assessed',est:'Relevant, measured or estimated',gap:'Relevant, data gap',na:'Not relevant to our model',excl:'Excluded, reason stated'};
+
+const MAP=[
+ ['Owned or controlled boiler, generator, vehicle','Scope 1 combustion','Fuel quantity, stock movement, calorific basis, gas-specific factors'],
+ ['Purchased electricity, steam, heat, cooling','Scope 2','Meters, invoices, supplier data, contractual attributes'],
+ ['Captive electricity','Fuel emissions in Scope 1. Do not also count the same generation as purchased electricity','Fuel records and generation meter'],
+ ['Cooling and refrigerant losses','Scope 1 fugitive emissions','Refrigerant identity and a reconciled mass balance, not equipment capacity alone'],
+ ['Owned or controlled wastewater treatment','Direct CH4 and N2O assessed with appropriate wastewater parameters. Purchased treatment is generally Scope 3','Flow, COD or BOD, treatment route'],
+ ['Purchased cotton, polyester, yarn, fabric, dyes, packaging','Scope 3 category 1','Supplier footprint and its boundary (match cradle-to-gate coverage to what was bought)'],
+ ['External dyeing and finishing','Generally category 1, purchased processing services outside the boundary. Check ownership and control, and factor overlap','Service volumes, subcontract boundary and control arrangement'],
+ ['Fuel and electricity upstream emissions, electricity losses','Category 3, separate from Scope 1 and 2','Fuel and electricity quantities'],
+ ['Freight','Category 4 or 9 depending on the purchased service and value-chain role','Mass, distance, mode, payer and shipment IDs']
+];
+const RULES=[
+ ['Avoid double counting fabric and yarn','Do not count the same fabric footprint and its embedded yarn or fibre footprint twice. If the sewing company buys fabric with a cradle-to-gate factor, do not also list the dyehouse emissions already inside it. Outsourced emissions are not automatically Scope 1.'],
+ ['Scope 2: dual reporting and contractual claims','Dual reporting applies where qualifying supplier or product-specific information is available; assess that condition. Always preserve the location-based result. Do not call a renewable tariff or certificate zero-carbon without checking attributes, exclusive ownership and retirement, market and vintage fit, and the quality criteria. Use residual mix data where available. Meter on-site solar generation, consumption, exports and grid imports separately; exports do not automatically cancel imports. Purchased steam needs delivered-energy and supplier methodology evidence, not an electricity grid factor.'],
+ ['Cotton and other land-linked inputs','Land Sector and Removals Standard v1.1 is effective 1 January 2027. Check its applicability for the period at issue and document any early adoption. Distinguish land management, land-use change, biogenic products and removals. Ask suppliers for geography, traceability, boundary and land-use assumptions. Organic cotton, recycled content, biomass fuel and fibre carbon storage never justify an automatic negative factor. A certificate for organic or recycled fibre is not an emissions factor.'],
+ ['Biogenic and non-gross items','Disclose biomass combustion CO2 separately from fossil scope totals while accounting for CH4 and N2O in the relevant scope. Present offsets, project reductions, avoided emissions and removals outside gross scope totals. Avoid net-zero or carbon-neutral claims based on subtraction alone.'],
+ ['Quality checks before you trust a number','Reconcile electricity to bills and meters, fuels to purchases and opening and closing stocks, refrigerants to maintenance records, and textile inputs to output plus scrap and stock changes. Check 12-month coverage, duplicates, kWh against MWh, kg against tonne, litres against mass, wet against dry weight, and missing plants. Investigate abrupt changes against production and weather.'],
+ ['Product footprints are a different job','A garment or SKU footprint needs its own functional unit, life-cycle boundary, allocation, use and end-of-life scenarios. A facility intensity multiplied by garment weight is at most a screening estimate. A cradle-to-gate result must be labelled partial, and a lighter garment or lower facility intensity does not prove a better product over its life.']
+];
+const EVID=[
+ 'Fuel bills, stock records, calorific data and boiler or generator logs',
+ 'Electricity meters, utility bills and import or export data',
+ 'Steam, heat and cooling quantity and supplier method',
+ 'Energy contracts, certificates, retirement and attribute ownership',
+ 'Refrigerant purchases, recovery, charges and service records',
+ 'Wastewater treatment, COD or BOD, flow and disposal information',
+ 'Fibre, yarn, fabric, chemical and packaging purchases and supplier footprints',
+ 'Outsourced wet-processing and service volumes and boundaries',
+ 'Capital expenditure, waste routes and purchased treatment',
+ 'Freight mass, distance, mode, payer and shipment IDs',
+ 'Travel, commuting and leased-asset information',
+ 'Sold-product processing, use and end-of-life assumptions',
+ 'Production, scrap, input and output and stock reconciliation',
+ 'Factor sources, versions, licences and GWP basis'
+];
+const EVST={'':'Not requested',req:'Requested',part:'Received, partial',full:'Received, complete',na:'Not applicable'};
+
+const DATES=[
+ {k:'2026-01-01',d:'1 Jan 2026',inst:'CBAM',tag:'In force',cls:'ok',t:'CBAM definitive regime begins. Selected goods in cement, iron and steel, aluminium, fertilisers, electricity and hydrogen. Archived transitional guidance is not the definitive rule.',s:'E4'},
+ {k:'2026-02-24',d:'24 Feb 2026',inst:'CSRD and CSDDD',tag:'Adopted',cls:'ok',t:'Council adopts the simplification package: new CSRD thresholds, CSDDD changes, and removal of the CSDDD climate transition plan obligation.',s:'E1'},
+ {k:'2026-03-18',d:'18 Mar 2026',inst:'CSDDD',tag:'In force',cls:'ok',t:'Directive (EU) 2026/470 enters into force.',s:'E2'},
+ {k:'2026-07-29',d:'29 Jul 2026',inst:'GHG Protocol',tag:'Announced',cls:'plan',t:'GHG Protocol announces development of a consolidated GHG Protocol and ISO corporate standard. Current standards stay the basis until a final one is published.',s:'G5'},
+ {k:'2026-10-31',today:true,d:'31 Oct 2026',t:'Today. Source snapshot checked 30 October 2026.'},
+ {k:'2027-01-01',d:'1 Jan 2027',inst:'GHG Protocol',tag:'Effective',cls:'warn',t:'Land Sector and Removals Standard v1.1 effective. Check applicability to cotton and other agricultural inputs for the period you report, and document any early adoption.',s:'G6'},
+ {k:'2027-04-01',d:'Q2 2027',inst:'GHG Protocol',tag:'Planned',cls:'plan',plan:true,t:'Consultation on the consolidated GHG Protocol and ISO corporate standard is planned.',s:'G5'},
+ {k:'2027-07-01',d:'2027',inst:'DPP and ESPR',tag:'Planned, not a deadline',cls:'plan',plan:true,t:'The Commission roadmap indicates adoption of the textile delegated act under ESPR. This is a planned adoption year, not a date when textile passports become mandatory. Check the actual act, product coverage and transition dates.',s:'E5'},
+ {k:'2028-07-26',d:'26 Jul 2028',inst:'CSDDD',tag:'Transposition due',cls:'warn',t:'Member States must transpose the CSDDD into national law.',s:'E2'},
+ {k:'2028-10-01',d:'Q4 2028',inst:'GHG Protocol',tag:'Planned',cls:'plan',plan:true,t:'Final publication of the consolidated corporate standard is planned.',s:'G5'},
+ {k:'2029-07-26',d:'26 Jul 2029',inst:'CSDDD',tag:'Application date',cls:'warn',t:'CSDDD application begins.',s:'E2'},
+ {k:'2030-01-01',d:'1 Jan 2030',inst:'CSDDD',tag:'Application date',cls:'warn',t:'CSDDD Article 16 reporting applies for financial years beginning on or after this date.',s:'E2'}
+];
+
+const CLAIMS=[
+ {tag:'Buyer',v:'wrong',say:'"Send us your GHG Protocol certificate to prove CSRD compliance."',truth:'No such certificate exists. The GHG Protocol is a voluntary accounting standard, and WRI and WBCSD do not approve or certify inventories. An inventory alone does not satisfy CSRD, and a non-EU supplier does not become subject to an EU buyer\'s CSRD duties just by selling to them.',prep:'A scoped inventory labelled draft, reviewed or externally assured, with its boundary, data coverage and gaps. Ask the buyer which specific data fields they need.',src:['G1','E1']},
+ {tag:'Legal',v:'wrong',say:'"Pay us CBAM tax based on your annual carbon footprint."',truth:'CBAM concerns specific goods (cement, iron and steel, aluminium, fertilisers, electricity, hydrogen) imported into the EU. Ordinary textile and apparel exports are not automatically covered because they are carbon-intensive or contain cotton or polyester. No CBAM charge is calculated from a corporate total.',prep:'A list of CN codes for everything you ship, checked against current Annex I. If you supply separate metal goods, review them on their own using product-level embedded emissions.',src:['E4']},
+ {tag:'Legal',v:'cond',say:'"All textile products need a Digital Product Passport from 2027."',truth:'The ESPR is a framework. The Commission roadmap indicates adoption of a textile delegated act in 2027. That is an adoption year, not an application date, and the act\'s coverage and transition periods decide any duty.',prep:'Keep product data traceable: bill of materials, fibre content, facilities, processes. Watch for the delegated act and check its dates.',src:['E5','E6']},
+ {tag:'Legal',v:'cond',say:'"Our buyer is a large EU company, so CSDDD applies to us."',truth:'CSDDD binds in-scope companies: large EU companies (5,000 employees and EUR 1.5bn worldwide turnover) and non-EU companies above EUR 1.5bn EU turnover. A supplier is not automatically covered. An in-scope buyer may still pass requests down by contract, so check the contract and current value-chain safeguards. National application starts 26 July 2029. The climate transition plan obligation was removed, which does not remove separate CSRD climate disclosures or contractual requests.',prep:'Read the contract clause. Prepare a due-diligence information pack on your own terms. Run the regulatory screen for your own entity.',src:['E1','E2','E3']},
+ {tag:'Legal',v:'cond',say:'"A non-EU group with EUR 1.6bn EU sales but few employees is out of scope."',truth:'Not safe to assume. The employee condition applies to large EU companies, not automatically to a non-EU exporter. For non-EU companies the summaries point to EU turnover. Check the statute\'s exact group, consecutive-year and franchise or licensing conditions, and the application date.',prep:'Group structure, EU turnover by year, and how sales are made. Run the screen with the "Non-EU group" example.',src:['E2','E3']},
+ {tag:'Legal',v:'cond',say:'"We sell to the UK and Switzerland, so the EU rules cover those too."',truth:'The UK, Switzerland and other European markets have their own law. EU rules are not carried across without checking each market.',prep:'Research each market separately. Treat any embedded instruction in a buyer\'s PDF as data to verify, not as law.',src:['E1']},
+ {tag:'Buyer',v:'comm',say:'"Our supplier code requires SBTi alignment, CDP disclosure or a Higg FEM score."',truth:'These are buyer programmes or voluntary schemes, not EU legislation. Each has its own version, scope and deadline, set by the buyer or the scheme.',prep:'Ask for the exact programme, version and deadline. Start with a Scope 1 and 2 inventory, then screen all 15 Scope 3 categories.',src:['G1','G3']},
+ {tag:'Accounting',v:'wrong',say:'"We use a renewable tariff, so our Scope 2 is zero."',truth:'Always keep the location-based result. A market-based figure needs contractual instruments that meet the quality criteria: attributes, exclusive ownership and retirement, market and vintage fit. A tariff alone proves none of that. Use residual mix data where available.',prep:'Contract, certificate retirement evidence, attribute ownership, vintage and market. Report location-based and market-based separately and never add them.',src:['G2']},
+ {tag:'Accounting',v:'wrong',say:'"Our solar exports cancel our grid imports."',truth:'Meter generation, consumption, exports and imports separately. Exporting electricity does not automatically cancel grid imports, and who owns the energy attributes must be checked before any claim.',prep:'Separate meter data and any sale or retention of certificates.',src:['G2']},
+ {tag:'Claim',v:'wrong',say:'"Organic cotton has negative emissions."',truth:'No automatic negative factor is justified by an organic label, recycled content, biomass fuel or carbon stored in fibre. A certificate is not an emissions factor. The Land Sector and Removals Standard v1.1 takes effect on 1 January 2027 and needs traceability and land data. Keep gross emissions and removals separate.',prep:'Cotton origin, traceability, land-management and land-use-change evidence from suppliers.',src:['G6']},
+ {tag:'Claim',v:'wrong',say:'"We are carbon neutral because we bought offsets."',truth:'Report gross emissions. Offsets, avoided emissions and removals are disclosed separately and not subtracted from gross scope totals. Avoid net-zero or carbon-neutral claims built on subtraction alone.',prep:'Gross inventory by scope, with credits listed separately and their basis.',src:['G1','G3']},
+ {tag:'Claim',v:'cond',say:'"Our factory emits 2 kgCO2e per kg, so a 200 g shirt is 0.4 kgCO2e."',truth:'At most a facility allocation screening estimate with a matched boundary. It is not a product footprint. It leaves out fibre, other stages, use and end of life, and product rules.',prep:'For a real footprint: functional unit, bill of materials, yields, allocation, packaging, use and end-of-life scenarios, and the product rules that apply.',src:['G4']},
+ {tag:'Accounting',v:'cond',say:'"Outsourced dyeing counts as our Scope 1."',truth:'Generally category 1, purchased processing services outside your boundary, unless the operation is under your ownership or control. Check that a cradle-to-gate fabric factor does not already contain the same dyehouse emissions.',prep:'Service volumes, subcontract arrangement and control evidence, and the boundary of the factor used.',src:['G1','G3']},
+ {tag:'Accounting',v:'wrong',say:'"We sell into the EU, so we use the EU grid factor."',truth:'Use a factor that matches the factory\'s own grid, technology and period. The destination market\'s grid says nothing about where the electricity was used.',prep:'Authoritative national or utility factor with provenance and a suitability rationale.',src:['G2']},
+ {tag:'Accounting',v:'wrong',say:'"We have no fuel invoices for four months, so record zero."',truth:'Missing is not zero. Keep the gap visible, use a transparent estimation method if justified, and disclose estimated coverage and uncertainty.',prep:'Fuel purchases, stock movements and boiler logs for the missing months. Mark estimates as estimates.',src:['G1']},
+ {tag:'Claim',v:'wrong',say:'"We are EU compliant."',truth:'A GHG-only review is not a market-access check. This portal covers climate-related instruments only. Chemical restrictions, fibre labelling, packaging, waste, consumer claims and labour rules need their own screening, and compliance cannot be inferred from GHG data.',prep:'Say exactly which regimes were reviewed, for which entity, goods and date.',src:['E1','E4','E6']}
+];
+const VERDICT={wrong:['Not correct as stated','bad'],cond:['Depends on conditions','warn'],comm:['Commercial, not legal','plan']};
+
+/* ---------- units ---------- */
+const UNITS={
+ kWh:{dim:'energy',f:1,l:'kWh'},MWh:{dim:'energy',f:1000,l:'MWh'},MJ:{dim:'energy',f:1/3.6,l:'MJ'},GJ:{dim:'energy',f:1000/3.6,l:'GJ'},
+ kg:{dim:'mass',f:1,l:'kg'},t:{dim:'mass',f:1000,l:'tonne'},
+ L:{dim:'volume',f:1,l:'litre'},m3:{dim:'volume',f:1000,l:'m³'},
+ USD:{dim:'USD',f:1,l:'USD'},EUR:{dim:'EUR',f:1,l:'EUR'},PKR:{dim:'PKR',f:1,l:'PKR'},GBP:{dim:'GBP',f:1,l:'GBP'},
+ pcs:{dim:'pieces',f:1,l:'pieces'}
+};
+const UNIT_GROUPS=[['Energy',['kWh','MWh','MJ','GJ']],['Mass',['kg','t']],['Volume',['L','m3']],['Spend (note price year and currency)',['USD','EUR','PKR','GBP']],['Count',['pcs']]];
+
+/* ---------- state ---------- */
+const KEY='tcn-v1';
+const PRESETS={
+ small:{model:'garment',country:'Pakistan',mk:{eu:true,uk:true,ch:false,oth:false},entityEU:'no',euEntity:'no',employees:'',wwTurnover:'',euTurnover:'40',subTurnover:'',importer:'buyer',cbamGoods:'no',cn:'6109 10 00',
+   msg:'Example loaded: a garment maker with EUR 40m of EU sales, shipping to the EU and the UK.'},
+ bigeu:{model:'integrated',country:'Example country',mk:{eu:true,uk:false,ch:false,oth:false},entityEU:'no',euEntity:'yes',employees:'',wwTurnover:'',euTurnover:'1600',subTurnover:'320',importer:'us',cbamGoods:'no',cn:'5208 11 10',
+   msg:'Example loaded: a non-EU group with EUR 1.6bn of EU sales and an EU subsidiary. Employee numbers do not change the non-EU tests.'},
+ eusub:{model:'integrated',country:'Example EU country',mk:{eu:true,uk:false,ch:true,oth:false},entityEU:'yes',euEntity:'yes',employees:'1200',wwTurnover:'600',euTurnover:'',subTurnover:'',importer:'us',cbamGoods:'unsure',cn:'6203 42 11',
+   msg:'Example loaded: an EU entity with 1,200 employees and EUR 600m worldwide turnover.'}
+};
+function newProfile(key){const b={model:'garment',country:'',mk:{eu:false,uk:false,ch:false,oth:false},entityEU:'unsure',euEntity:'unsure',employees:'',wwTurnover:'',euTurnover:'',subTurnover:'',importer:'unsure',cbamGoods:'unsure',cn:'',example:false,msg:''};
+  if(!key)return b;const p=JSON.parse(JSON.stringify(PRESETS[key]));return Object.assign(b,p,{example:true});}
+function newDraft(){return{desc:'',scope:'s1',cat:'1',method:'af',qty:'',unit:'kWh',fac:'',facNum:'kg',facDen:'kWh',facSrc:'',mass:'',massU:'t',dist:'',frFac:'',
+  g:{co2:{m:'',w:''},ch4:{m:'',w:''},n2o:{m:'',w:''}},gwpSrc:'',site:'',evid:'',dstat:'measured',cov:'',gap:''};}
+function seedLines(){return[
+ {id:uid(),ex:true,desc:'Plant A purchased electricity',scope:'s2l',cat:'',method:'af',qty:'2',unit:'MWh',fac:'0.5',facNum:'kg',facDen:'kWh',facSrc:'Fictional test factor',site:'Plant A',evid:'Meter log (example)',dstat:'measured',cov:'100',gap:''},
+ {id:uid(),ex:true,desc:'Outbound sea freight, shipment batch (example)',scope:'s3',cat:'4',method:'fr',mass:'20',massU:'t',dist:'5000',frFac:'0.1',facSrc:'Fictional test factor',site:'',evid:'',dstat:'estimated',cov:'',gap:''},
+ {id:uid(),ex:true,desc:'Diesel generator, four months of fuel invoices missing',scope:'s1',cat:'',method:'af',qty:'',unit:'L',fac:'',facNum:'kg',facDen:'L',facSrc:'',site:'Plant A',evid:'',dstat:'unknown',cov:'67',gap:'Invoices for four months not yet received. Left unresolved, not set to zero.'}
+];}
+function defaults(){return{v:1,profile:newProfile('small'),scope3:{},evidence:{},lines:seedLines(),draft:newDraft(),
+  intensity:{num:'',den:'',unit:'kg',def:'',garm:''},
+  eng:{company:'',period:'',baseYear:'',approach:'',buyer:'',mostlyEst:false,reviewer:'',reviewScope:'',assuranceProvider:'',assuranceScope:'',assuranceStatement:false}};}
+let S=defaults();
+function load(){try{const raw=localStorage.getItem(KEY);if(!raw)return;const o=JSON.parse(raw);if(o&&o.v===1){const d=defaults();S=Object.assign(d,o);S.profile=Object.assign(d.profile,o.profile||{});S.profile.mk=Object.assign(d.profile.mk,(o.profile||{}).mk||{});S.draft=Object.assign(d.draft,o.draft||{});S.draft.g=Object.assign(d.draft.g,(o.draft||{}).g||{});S.intensity=Object.assign(d.intensity,o.intensity||{});S.eng=Object.assign(d.eng,o.eng||{});if(!Array.isArray(S.lines))S.lines=[];}}catch(e){}}
+let saveT=null;function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}},250);}
+const getp=p=>p.split('.').reduce((o,k)=>o==null?undefined:o[k],S);
+function setp(path,val){const ks=path.split('.');let o=S;for(let i=0;i<ks.length-1;i++){if(o[ks[i]]==null||typeof o[ks[i]]!=='object')o[ks[i]]={};o=o[ks[i]];}o[ks[ks.length-1]]=val;}
+
+/* ---------- regulatory screen logic ---------- */
+const STATUS={applies:['Applies on triage thresholds','●'],no:['Does not apply on stated facts','○'],future:['Potential future requirement','◐'],und:['Undetermined','?'],info:['Voluntary or contractual','◇'],out:['Not screened here','–']};
+function evalScreen(p){
+  const emp=num(p.employees),ww=num(p.wwTurnover),eu=num(p.euTurnover),sub=num(p.subTurnover);
+  const inEU=p.entityEU==='yes';
+  const euRel=!!p.mk.eu||inEU;
+  const items=[];
+  const mkList=[p.mk.eu&&'EU',p.mk.uk&&'UK',p.mk.ch&&'Switzerland',p.mk.oth&&'other Europe'].filter(Boolean).join(', ')||'none stated';
+  const noEU='No EU sales and no EU entity stated, so EU instruments do not directly reach you on these facts. Revisit if you plan to sell into the EU.';
+  const thr=(label,v,t,unit)=>v==null?`${label}: not given`:`${label}: ${fmt(v,0)}${unit||''} vs more than ${fmt(t,0)}${unit||''}`;
+
+  /* CSRD */
+  (function(){
+    const o={id:'csrd',kind:'Legal',name:'CSRD and ESRS E1 (sustainability reporting)',src:['E1'],
+      entity:'Reporting entity or EU subsidiary or branch',
+      dates:'Application depends on entity type and financial year. The dated snapshot holds no year-by-year table.',
+      verify:'Articles 19a, 29a and 40a of the amended Accounting Directive, aggregation, reference years, entity type, exemptions, national implementation and the current ESRS.',
+      next:[],facts:[]};
+    if(!euRel){return items.push({...o,status:'no',why:noEU,facts:['EU sales: none stated'],next:['Revisit if you start selling into the EU.']});}
+    if(p.entityEU==='yes'){
+      const a=cmp(emp,1000),b=cmp(ww,450);
+      o.facts=[thr('Employees',emp,1000),thr('Worldwide turnover',ww,450,'m')];
+      if(a==='lt'||b==='lt'){o.status='no';o.why='At least one EU-company triage threshold is not met on the figures given (more than 1,000 employees and more than EUR 450m net turnover).';o.next=['Confirm the figures, the reference years and whether another test applies to your entity type.'];}
+      else if(a==='gt'&&b==='gt'){o.status='applies';o.why='Both EU-company triage thresholds are exceeded on the figures given.';o.next=['Confirm entity type, group aggregation and the first financial year of reporting.','Map your inventory to the ESRS E1 data points. An inventory alone does not meet all disclosure requirements.'];}
+      else{o.status='und';o.why='A figure is missing or sits exactly on a threshold. Exact equality is not resolved from rounded summary wording.';o.next=['Provide employees and worldwide net turnover for the relevant years.'];}
+    }else if(p.entityEU==='no'){
+      o.entity='Non-EU parent and its EU subsidiary or branch';
+      const t=cmp(eu,450),s=cmp(sub,200);
+      o.facts=[thr('EU turnover of the group',eu,450,'m'),p.euEntity==='no'?'EU subsidiary or branch: none':thr('EU subsidiary or branch turnover',sub,200,'m')];
+      if(t==='lt'){o.status='no';o.why='EU turnover is not above the EUR 450m triage level for a non-EU parent.';}
+      else if(p.euEntity==='no'){o.status='no';o.why='The third-country test described by the Council involves an EU subsidiary or branch, and none is stated. Selling goods to an EU buyer alone does not create a direct CSRD reporting duty.';}
+      else if(p.euEntity==='yes'){
+        if(s==='lt'){o.status='no';o.why='The EU subsidiary or branch is not above the EUR 200m triage level.';}
+        else if(t==='gt'&&s==='gt'){o.status='applies';o.why='Group EU turnover is above EUR 450m and the EU subsidiary or branch is above EUR 200m, on the figures given.';}
+        else{o.status='und';o.why='A figure is missing or sits exactly on a threshold.';}
+      }else{o.status='und';o.why='Whether an EU subsidiary or branch exists is not known.';}
+      o.next=o.status==='applies'?['Confirm Articles 29a and 40a conditions, the reference years and which entity reports.']:o.status==='und'?['Confirm whether you have an EU subsidiary or branch and provide the missing turnover figures.']:['Confirm the figures and years. Customers in scope may still send you data requests as a commercial matter.'];
+    }else{o.status='und';o.why='It is not known whether the selling entity is established in the EU.';o.next=['Confirm the legal entity that contracts with your EU buyers.'];}
+    items.push(o);
+  })();
+
+  /* CSDDD */
+  (function(){
+    const o={id:'csddd',kind:'Legal',name:'CSDDD / CS3D (corporate due diligence)',src:['E1','E2','E3'],
+      entity:'Large EU companies, and non-EU companies by EU turnover',
+      dates:'In force since 18 March 2026. Transposition due 26 July 2028. Application from 26 July 2029. Article 16 reporting for financial years beginning on or after 1 January 2030.',
+      verify:'Exact statutory operators, consecutive-year tests, group rules and franchise or licensing routes in Directive (EU) 2026/470 and the amended consolidated text. National transposition.',next:[],facts:[]};
+    if(!euRel){return items.push({...o,status:'no',why:noEU,facts:['EU sales: none stated'],next:['Revisit if you start selling into the EU.']});}
+    if(p.entityEU==='yes'){
+      const a=cmp(emp,5000),b=cmp(ww,1500);
+      o.facts=[thr('Employees',emp,5000),thr('Worldwide turnover',ww,1500,'m')];
+      if(a==='lt'||b==='lt'){o.status='no';o.why='At least one large-EU-company triage threshold is not met (5,000 employees and EUR 1.5bn worldwide turnover).';o.next=['Confirm the figures. In-scope customers may still pass due-diligence requests through contracts.'];}
+      else if(a==='gt'&&b==='gt'){o.status='future';o.why='Both triage thresholds are exceeded. The duty is not yet applying.';o.next=['Plan for application from 26 July 2029 and watch national transposition.'];}
+      else{o.status='und';o.why='A figure is missing or sits exactly on a threshold.';o.next=['Provide employees and worldwide turnover for the relevant years.'];}
+    }else if(p.entityEU==='no'){
+      const t=cmp(eu,1500);
+      o.facts=[thr('EU turnover',eu,1500,'m'),'Employee thresholds are not applied to non-EU exporters'];
+      if(t==='gt'){o.status='future';o.why='EU turnover is above the EUR 1.5bn triage level for non-EU companies. Few employees would not take you out of scope on this test.';o.next=['Check the statute\'s consecutive-year and group conditions, and any franchise or licensing route.','Plan for application from 26 July 2029.'];}
+      else if(t==='lt'){o.status='no';o.why='EU turnover is not above the EUR 1.5bn triage level on the figure given. Franchise and licensing routes can also create scope, so check them.';o.next=['Customers that are in scope may still ask for due-diligence information by contract. Check the contract and current value-chain safeguards.'];}
+      else{o.status='und';o.why='EU turnover is missing or sits exactly on the threshold.';o.next=['Provide group EU turnover for the relevant years.'];}
+    }else{o.status='und';o.why='It is not known whether the selling entity is established in the EU.';o.next=['Confirm the legal entity that contracts with your EU buyers.'];}
+    items.push(o);
+  })();
+
+  /* CBAM */
+  (function(){
+    const o={id:'cbam',kind:'Legal',name:'CBAM (carbon border adjustment)',src:['E4'],
+      entity:'EU importer or authorised declarant, for covered goods',
+      dates:'Definitive regime began 1 January 2026.',
+      verify:'Match each good to the current Annex I CN codes, including separately supplied metal goods. Check amendments. A proposal or negotiating position to expand scope is not an enacted expansion.',next:[],facts:['Goods in CBAM sectors: '+({yes:'yes',no:'no',unsure:'not sure'}[p.cbamGoods]||'not sure')]};
+    const imp=p.importer==='us'?'You import, or act through an EU entity, so the importer role needs its own check.':p.importer==='buyer'?'Your EU buyer holds the importer role and may ask you for embedded-emissions data for any covered goods.':'Confirm who is the importer, because that role carries the obligations.';
+    if(!euRel){return items.push({...o,status:'no',why:noEU,next:[]});}
+    if(p.cbamGoods==='no'){o.status='no';o.why='Ordinary textile and apparel exports are not automatically covered just because they are carbon-intensive or contain cotton or polyester. This is an inference from the listed sectors, not a binding customs classification. '+imp;o.next=['Keep a list of CN codes for everything you ship and check it against current Annex I.','No CBAM amount is derived from your corporate footprint.'];}
+    else if(p.cbamGoods==='yes'){o.status='und';o.why='Some goods may be covered. Coverage turns on the exact CN code, not the sector. '+imp;o.next=['List the CN codes of those goods and match them to Annex I.','For covered goods, product-level embedded emissions under the CBAM rules are needed. Your corporate inventory is not the prescribed method.'];}
+    else{o.status='und';o.why='It is not known whether any goods fall in the listed sectors. '+imp;o.next=['Review everything you ship, including metal goods supplied with textiles.'];}
+    items.push(o);
+  })();
+
+  /* DPP */
+  (function(){
+    const o={id:'dpp',kind:'Legal',name:'ESPR and Digital Product Passport',src:['E5','E6'],entity:'Producers and others placing products on the EU market, under product-specific acts',
+      dates:'Regulation (EU) 2024/1781 is in place as a framework. The roadmap indicates adoption of a textile delegated act in 2027. That is a planned adoption year, not a universal deadline.',
+      verify:'The actual delegated act, product coverage and transition or application dates. Other ESPR provisions have separate dates, including unsold-goods provisions, so no textile passport duty today does not mean no ESPR obligation exists.',next:[],facts:['EU market: '+(p.mk.eu?'yes':'no')]};
+    if(!p.mk.eu){o.status='no';o.why='No sales into the EU Member States stated.';}
+    else{o.status='future';o.why='Textiles are expected to be addressed through a product-specific delegated act that has not yet set your obligations.';o.next=['Keep product data traceable: fibre content, bill of materials, facilities and processes.','Monitor the delegated act and check its dates before stating any duty.'];}
+    items.push(o);
+  })();
+
+  /* Other markets */
+  [['uk','United Kingdom'],['ch','Switzerland'],['oth','Other European countries']].forEach(([k,n])=>{
+    if(!p.mk[k])return;
+    items.push({id:'mk-'+k,kind:'Legal',name:n+' requirements',src:[],entity:'Depends on that market\'s law',status:'und',
+      why:'This portal does not apply EU rules to '+n+'. Its climate-related reporting and supply-chain rules need their own research.',dates:'Not covered by the source snapshot.',verify:'Current national law and any buyer requirement in that market.',next:['Research '+n+' law separately before drawing a conclusion.'],facts:['Market: '+n]});
+  });
+
+  /* Accounting basis and buyers */
+  items.push({id:'ghg',kind:'Accounting',name:'GHG Protocol (accounting basis)',src:['G1','G2','G3','G6'],entity:'Whoever adopts it',status:'info',
+    why:'Voluntary unless incorporated into law, a contract or a reporting scheme. It gives no automatic EU market-access certificate, and no one issues a GHG Protocol certificate.',
+    dates:'Corporate Standard 2004 (amended), Scope 2 Guidance 2015, Scope 3 Standard 2011. Land Sector and Removals Standard v1.1 effective 1 January 2027. A consolidated GHG Protocol and ISO standard is planned, not yet in force.',
+    verify:'Open the full applicable standard for disputed classifications and any conformance claim.',next:['Use the inventory tools and calculator to build a traceable inventory.'],facts:[]});
+  items.push({id:'buyer',kind:'Commercial',name:'Buyer programmes and questionnaires',src:[],entity:'You, under the contract or platform',status:'info',
+    why:'CDP, SBTi, Higg FEM and private audits are commercial or voluntary, not EU legislation. They can apply even when no law binds you.',
+    dates:'Set by each buyer, platform or scheme.',verify:'The actual contract, platform and methodology version.',next:['Identify exactly what each buyer asks, in which version, and by when. See Buyer requests and claims.'],facts:[]});
+  items.push({id:'other',kind:'Out of scope',name:'Other market-access rules',src:[],entity:'Varies',status:'out',
+    why:'Chemical restrictions, fibre labelling, packaging, waste and producer responsibility, consumer claims and forced-labour rules are not screened here, and compliance with them cannot be inferred from GHG data.',
+    dates:'Not covered.',verify:'Screen each separately when you need it.',next:['Describe any GHG-only review as exactly that. Never present a blanket "EU compliant" result.'],facts:[]});
+  return {items,mkList,euRel};
+}
+
+function cnPointers(txt){
+  return String(txt||'').split(/[\n,;]+/).map(s=>s.replace(/[^0-9]/g,'')).filter(s=>s.length>=2).map(c=>{
+    const ch=Number(c.slice(0,2));let t,cls;
+    if(ch>=50&&ch<=63){t='Chapters 50 to 63 are the textile chapters. They are not listed CBAM sectors, but confirm the exact code against Annex I.';cls='no';}
+    else if([25,27,28,31,72,73,76].includes(ch)){t='A chapter where some CBAM sector goods sit. Check the full code against current Annex I.';cls='und';}
+    else{t='No chapter-level pointer. Check the exact code against current Annex I.';cls='info';}
+    return {c,t,cls};
+  });
+}
+
+/* ---------- calculation ---------- */
+function compute(l){
+  const r={t:null,eq:'',err:'',warns:[]};
+  const bad=m=>{r.err=m;return r;};
+  if(l.method==='af'){
+    const q=num(l.qty),f=num(l.fac);
+    if(q==null)return bad('Quantity missing. Kept unresolved, not zero.');
+    if(f==null)return bad('Factor missing. Kept unresolved, not zero.');
+    const a=UNITS[l.unit],b=UNITS[l.facDen];
+    if(!a||!b)return bad('Unit not recognised.');
+    if(a.dim!==b.dim)return bad(`Unit mismatch: activity is in ${a.l} (${a.dim}) but the factor is per ${b.l} (${b.dim}). Convert with a documented basis, such as calorific value or density, before calculating.`);
+    const qf=q*a.f/b.f;const kg=qf*f*(l.facNum==='t'?1000:1);r.t=kg/1000;
+    r.eq=(l.unit!==l.facDen?`${fmt(q,6)} ${a.l} = ${fmt(qf,6)} ${b.l}; `:'')+`${fmt(qf,6)} ${b.l} × ${fmt(f,6)} ${l.facNum==='t'?'t':'kg'}CO2e/${b.l}${l.facNum==='t'?'':' ÷ 1,000'} = ${fmt(r.t,6)} tCO2e`;
+    if(!String(l.facSrc||'').trim())r.warns.push('No factor source recorded');
+  }else if(l.method==='fr'){
+    const m=num(l.mass),d=num(l.dist),f=num(l.frFac);
+    if(m==null||d==null||f==null)return bad('Mass, distance or factor missing. Kept unresolved, not zero.');
+    const tonnes=l.massU==='kg'?m/1000:m;r.t=tonnes*d*f/1000;
+    r.eq=`${fmt(tonnes,6)} t × ${fmt(d,3)} km × ${fmt(f,6)} kgCO2e/t-km ÷ 1,000 = ${fmt(r.t,6)} tCO2e`;
+    if(!String(l.facSrc||'').trim())r.warns.push('No factor source recorded');
+  }else{
+    const g=l.g||{};const parts=[];let kg=0;let any=false;
+    for(const k of ['co2','ch4','n2o']){
+      const m=num((g[k]||{}).m),w=num((g[k]||{}).w);
+      if(m==null&&w==null)continue;
+      if(m==null)return bad('Mass missing for '+k.toUpperCase()+'.');
+      if(w==null)return bad('GWP missing for '+k.toUpperCase()+'. Take it from the source the applicable standard requires.');
+      any=true;kg+=m*w;parts.push(`${fmt(m,6)} kg ${k.toUpperCase()} × ${fmt(w,3)}`);
+    }
+    if(!any)return bad('Enter at least one gas mass and its GWP.');
+    r.t=kg/1000;r.eq=`(${parts.join(' + ')}) ÷ 1,000 = ${fmt(r.t,6)} tCO2e`;
+    if(!String(l.gwpSrc||'').trim())r.warns.push('GWP source and horizon not recorded');
+  }
+  return r;
+}
+function lineKey(l){return l.scope==='s3'?('s3-'+(l.cat||'?')):l.scope;}
+
+function totals(){
+  const g={};
+  S.lines.forEach(l=>{const k=lineKey(l);const r=compute(l);(g[k]=g[k]||{t:0,n:0,bad:0,est:0});g[k].n++;if(r.t==null)g[k].bad++;else{g[k].t+=r.t;if(l.dstat==='estimated'||l.dstat==='spend')g[k].est+=r.t;}});
+  return g;
+}
+
+/* ---------- views, routing ---------- */
+const VIEWS=['start','screen','dates','claims','inventory','calculator','report','sources'];
+let curView='start';
+function show(v){
+  if(!VIEWS.includes(v))v='start';curView=v;
+  VIEWS.forEach(x=>{const el=$('#v-'+x);if(el)el.hidden=(x!==v);});
+  $$('#nav a').forEach(a=>{if(a.dataset.view===v)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+  if(v==='start')renderStart();
+  if(v==='screen')renderScreen();
+  if(v==='report')renderReport();
+  if(v==='calculator'){renderCalc();}
+  if(v==='inventory'){renderScope3Meta();renderEvMeta();}
+  window.scrollTo(0,0);
+}
+function onHash(){const h=location.hash.replace('#','');show(VIEWS.includes(h)?h:'start');}
+
+/* ---------- renderers ---------- */
+function pill(st,label){const s=STATUS[st]||STATUS.und;return `<span class="pill ${st}">${esc(s[1])} ${esc(label||s[0])}</span>`;}
+function srcTags(a){return (a||[]).map(i=>`<a class="tag" href="#sources" title="See Sources and limits">${esc(i)}</a>`).join(' ');}
+
+function renderScreen(){
+  const p=S.profile;const {items,mkList}=evalScreen(p);
+  const legal=items.filter(i=>i.kind==='Legal');
+  const cnt=k=>legal.filter(i=>i.status===k).length;
+  const out=$('#screenOut');
+  const tally=`<div class="card flat stack"><div class="eyebrow">Legal instruments screened</div><div class="tally">`+
+    ['applies','future','und','no'].map(k=>cnt(k)?`${pill(k,cnt(k)+' '+STATUS[k][0].toLowerCase())}`:'').join('')+
+    `</div><p class="small muted">Markets: ${esc(mkList)}. Triage only: confirm each point against the operative text before relying on it.</p>
+    <div class="row"><button class="btn small" type="button" data-copy="screenmd">Copy as Markdown table</button></div></div>`;
+  const cards=items.map(i=>{
+    const cn=i.id==='cbam'?cnPointers(p.cn):[];
+    return `<article class="card rc">
+      <header><div class="stack" style="gap:2px"><span class="eyebrow">${esc(i.kind)}</span><h3>${esc(i.name)}</h3></div>${pill(i.status)}</header>
+      <dl>
+        <dt>Why</dt><dd>${esc(i.why)}</dd>
+        ${i.facts&&i.facts.length?`<dt>Facts used</dt><dd><div class="facts">${i.facts.map(f=>`<span class="tag">${esc(f)}</span>`).join('')}</div></dd>`:''}
+        <dt>Who it targets</dt><dd>${esc(i.entity)}</dd>
+        <dt>Dates</dt><dd>${esc(i.dates)}</dd>
+        ${cn.length?`<dt>CN code pointers</dt><dd><ul>${cn.map(c=>`<li><span class="mono">${esc(c.c)}</span>: ${esc(c.t)}</li>`).join('')}</ul><div class="hint">Chapter-level pointer only, not a customs classification.</div></dd>`:''}
+        <dt>Next steps</dt><dd>${i.next&&i.next.length?`<ul>${i.next.map(n=>`<li>${esc(n)}</li>`).join('')}</ul>`:'<span class="muted">None beyond routine monitoring.</span>'}</dd>
+        <dt>Still to verify</dt><dd>${esc(i.verify)}</dd>
+        ${i.src.length?`<dt>Sources</dt><dd>${srcTags(i.src)}</dd>`:''}
+      </dl></article>`;}).join('');
+  out.innerHTML=tally+cards;
+  const ex=$('#exbar');ex.hidden=!p.example;$('#exmsg').textContent=p.msg||'';
+}
+function updateFormVis(){
+  const e=S.profile.entityEU,u=S.profile.euEntity;
+  $('#g-euEntity').hidden=(e==='yes');
+  $('#g-emp').hidden=(e==='no');$('#g-ww').hidden=(e==='no');
+  $('#g-eu').hidden=(e==='yes');
+  $('#g-sub').hidden=(e==='yes'||u==='no');
+}
+
+function renderStart(){
+  const s3n=S3CATS.filter(c=>(S.scope3[c[0]]||{}).status).length;
+  const evn=EVID.filter((x,i)=>(S.evidence[i]||{}).st).length;
+  const real=S.lines.filter(l=>!l.ex).length;
+  const lab=reportLabel().label;
+  const m=(a,b)=>Math.round(100*a/b);
+  $('#progress').innerHTML=
+   `<a href="#screen"><span class="eyebrow">Regulatory screen</span><b>${S.profile.example?'Example':'Your facts'}</b><span class="small muted">${S.profile.example?'An example is loaded. Enter your own facts.':'Screen reflects the facts you entered.'}</span></a>`+
+   `<a href="#inventory"><span class="eyebrow">Scope 3 categories assessed</span><b>${s3n} of 15</b><div class="meter"><i style="width:${m(s3n,15)}%"></i></div></a>`+
+   `<a href="#inventory"><span class="eyebrow">Evidence items tracked</span><b>${evn} of ${EVID.length}</b><div class="meter"><i style="width:${m(evn,EVID.length)}%"></i></div></a>`+
+   `<a href="#calculator"><span class="eyebrow">Register lines</span><b>${real} of your own</b><span class="small muted">${S.lines.length-real?`${S.lines.length-real} example line(s) loaded. Report label: ${esc(lab)}.`:`Report label: ${esc(lab)}.`}</span></a>`;
+}
+
+function renderDates(){
+  const inst=['All',...Array.from(new Set(DATES.filter(d=>d.inst).flatMap(d=>d.inst.split(' and '))))];
+  $('#dateChips').innerHTML=inst.map((x,i)=>`<button class="chip" type="button" data-inst="${esc(x)}" aria-pressed="${i===0}">${esc(x)}</button>`).join('');
+  drawDates('All');
+}
+function drawDates(f){
+  const html=DATES.filter(d=>d.today||f==='All'||(d.inst||'').split(' and ').includes(f)).map(d=>{
+    if(d.today)return `<li class="today"><div class="today-bar">${esc(d.d)}</div><div class="what">${esc(d.t)}</div></li>`;
+    const past=d.k<'2026-10-31';
+    return `<li class="${d.plan?'plan':''} ${past?'past':''}"><div class="row" style="gap:8px"><span class="when">${esc(d.d)}</span><span class="pill ${d.cls}">${esc(d.tag)}</span><span class="tag">${esc(d.inst)}</span></div><div class="what">${esc(d.t)} ${srcTags([d.s])}</div></li>`;}).join('');
+  $('#tl').innerHTML=html;
+}
+
+let claimFilter='All',claimQ='';
+function renderClaims(){
+  const tags=['All','Legal','Buyer','Accounting','Claim'];
+  $('#claimChips').innerHTML=tags.map(t=>`<button class="chip" type="button" data-claim="${t}" aria-pressed="${t===claimFilter}">${t==='Buyer'?'Buyer programmes':t==='Claim'?'Claims':t}</button>`).join('');
+  const q=claimQ.toLowerCase();
+  const list=CLAIMS.filter(c=>(claimFilter==='All'||c.tag===claimFilter)&&(!q||(c.say+c.truth+c.prep).toLowerCase().includes(q)));
+  $('#claimCards').innerHTML=list.length?list.map(c=>{const v=VERDICT[c.v];return `<article class="card qa">
+    <div class="row" style="justify-content:space-between"><span class="pill ${v[1]}">${v[0]}</span><span class="tag">${esc(c.tag)}</span></div>
+    <div class="say">${esc(c.say)}</div>
+    <dl><div><dt>What it really means</dt><dd>${esc(c.truth)}</dd></div><div><dt>What to prepare</dt><dd>${esc(c.prep)}</dd></div></dl>
+    <div>${srcTags(c.src)}</div></article>`;}).join(''):'<p class="muted">Nothing matches. Try a different word or clear the filter.</p>';
+}
+
+function renderMap(){
+  $('#mapBody').innerHTML=MAP.map(r=>`<tr><td><b>${esc(r[0])}</b></td><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`).join('');
+  $('#rules').innerHTML=RULES.map(r=>`<details><summary>${esc(r[0])}</summary><div class="in"><p>${esc(r[1])}</p></div></details>`).join('');
+}
+function renderScope3(){
+  $('#s3list').innerHTML=S3CATS.map(c=>{const id=c[0];const v=S.scope3[id]||{};
+    return `<div class="s3row" data-cat="${id}">
+      <div class="stack" style="gap:4px"><div class="ttl"><span class="n">${id}</span><h4>${esc(c[1])}</h4></div><p class="small muted">${esc(c[3])}</p><p class="hint">Textile prompt: ${esc(c[2])}</p></div>
+      <div class="ctl"><label class="f" for="s3s-${id}"><span class="hint">Assessment</span>
+        <select id="s3s-${id}" data-bind="scope3.${id}.status">${Object.entries(S3ST).map(([k,l])=>`<option value="${k}">${l}</option>`).join('')}</select></label>
+        <textarea id="s3n-${id}" data-bind="scope3.${id}.note" placeholder="Method and evidence, reason for exclusion, or gap action and owner" aria-label="Notes for category ${id}"></textarea>
+        <div class="warnline" id="s3w-${id}" hidden></div></div></div>`;}).join('');
+  hydrate($('#s3list'));renderScope3Meta();
+}
+function renderScope3Meta(){
+  let done=0;
+  S3CATS.forEach(c=>{const id=c[0];const v=S.scope3[id]||{};if(v.status)done++;
+    const w=$('#s3w-'+id);if(!w)return;
+    let m='';if(v.status&&['na','excl','gap'].includes(v.status)&&!String(v.note||'').trim())m=v.status==='gap'?'Add the action and owner for this gap.':'Add the reason. Excluding a category needs a documented rationale.';
+    w.textContent=m;w.hidden=!m;});
+  const c=$('#s3count');if(c)c.textContent=`${done} of 15 categories assessed`;
+  const b=$('#s3bar');if(b)b.style.width=Math.round(done/15*100)+'%';
+}
+function renderEvidence(){
+  $('#evBody').innerHTML=EVID.map((t,i)=>`<tr><td style="min-width:220px">${esc(t)}</td>
+    <td><select data-bind="evidence.${i}.st" aria-label="Status: ${esc(t)}" style="min-width:150px">${Object.entries(EVST).map(([k,l])=>`<option value="${k}">${l}</option>`).join('')}</select></td>
+    <td><input type="text" data-bind="evidence.${i}.owner" aria-label="Owner: ${esc(t)}" style="min-width:110px"></td>
+    <td><input type="text" data-bind="evidence.${i}.note" aria-label="Notes: ${esc(t)}" placeholder="Period, sites, source ID, gaps" style="min-width:200px"></td></tr>`).join('');
+  hydrate($('#evBody'));renderEvMeta();
+}
+function renderEvMeta(){
+  const n=EVID.filter((x,i)=>(S.evidence[i]||{}).st).length;
+  const full=EVID.filter((x,i)=>['full','na'].includes((S.evidence[i]||{}).st)).length;
+  const c=$('#evcount');if(c)c.textContent=`${n} of ${EVID.length} items tracked, ${full} complete or not applicable`;
+  const b=$('#evbar');if(b)b.style.width=Math.round(full/EVID.length*100)+'%';
+}
+
+function fillUnitSelect(sel){sel.innerHTML=UNIT_GROUPS.map(([g,us])=>`<optgroup label="${esc(g)}">${us.map(u=>`<option value="${u}">${esc(UNITS[u].l)}</option>`).join('')}</optgroup>`).join('');}
+function initCalcForm(){
+  fillUnitSelect($('#d-unit'));fillUnitSelect($('#d-facden'));
+  $('#d-cat').innerHTML=S3CATS.map(c=>`<option value="${c[0]}">${c[0]}. ${esc(c[1])}</option>`).join('');
+}
+function draftLine(){const d=S.draft;return {id:uid(),ex:false,desc:d.desc,scope:d.scope,cat:d.scope==='s3'?d.cat:'',method:d.method,qty:d.qty,unit:d.unit,fac:d.fac,facNum:d.facNum,facDen:d.facDen,facSrc:d.facSrc,mass:d.mass,massU:d.massU,dist:d.dist,frFac:d.frFac,g:JSON.parse(JSON.stringify(d.g)),gwpSrc:d.gwpSrc,site:d.site,evid:d.evid,dstat:d.dstat,cov:d.cov,gap:d.gap};}
+function updateDraftUI(){
+  const d=S.draft;
+  $('#g-cat').hidden=d.scope!=='s3';
+  $('#m-af').hidden=d.method!=='af';$('#m-fr').hidden=d.method!=='fr';$('#m-gas').hidden=d.method!=='gas';
+  renderCalcPreview();
+}
+function renderCalcPreview(){
+  const r=compute(draftLine());const el=$('#calcPv');
+  if(r.err){el.innerHTML=`<span class="err">${esc(r.err)}</span>`;$('#addLine').disabled=false;$('#addHint').textContent='Lines that cannot be calculated are kept in the register as unresolved.';return;}
+  el.innerHTML=`${esc(r.eq)}<br><span class="big">${fmt(r.t,6)} tCO2e</span>${r.warns.length?`<br><span class="warnline">${esc(r.warns.join('. '))}</span>`:''}`;
+  $('#addHint').textContent='';
+}
+function scopeLabel(l){return {s1:'Scope 1',s2l:'Scope 2, location',s2m:'Scope 2, market',s3:'Scope 3'+(l.cat?', cat. '+l.cat:'')}[l.scope];}
+function renderCalc(){
+  $('#calcEx').hidden=!S.lines.some(l=>l.ex);
+  const tb=$('#lineBody');
+  tb.innerHTML=S.lines.length?S.lines.map(l=>{const r=compute(l);
+    return `<tr><td><b>${esc(l.desc||'(no description)')}</b>${l.ex?' <span class="pill warn">Example</span>':''}<div class="hint">${esc([l.site,l.evid,{measured:'Measured',estimated:'Estimated',spend:'Spend or average',unknown:'Not yet known'}[l.dstat]].filter(Boolean).join(' · '))}</div>${l.gap?`<div class="hint">${esc(l.gap)}</div>`:''}</td>
+    <td>${esc(scopeLabel(l))}</td>
+    <td class="small">${r.err?`<span class="err">Unresolved. ${esc(r.err)}</span>`:`<span class="mono">${esc(r.eq)}</span>${r.warns.length?`<div class="warnline">${esc(r.warns.join('. '))}</div>`:''}`}</td>
+    <td class="num">${r.t==null?'—':fmt(r.t,4)}</td>
+    <td><button class="btn ghost small" type="button" data-del="${l.id}" aria-label="Remove line">Remove</button></td></tr>`;}).join(''):'<tr><td colspan="5" class="muted">No lines yet. Add the first source on the left.</td></tr>';
+  const g=totals();
+  const row=(label,k,extra)=>{const x=g[k];if(!x)return `<tr><td>${label}</td><td class="num">—</td><td class="muted small">Not yet assessed. Blank means unknown.</td></tr>`;
+    const calc=x.n-x.bad;return `<tr><td>${label}</td><td class="num">${calc?fmt(x.t,4):'—'}</td><td class="small">${x.n} line${x.n>1?'s':''}${x.bad?`, <span class="err">${x.bad} unresolved</span>`:''}${extra||''}</td></tr>`;};
+  let rows=row('Scope 1','s1')+row('Scope 2, location-based','s2l')+row('Scope 2, market-based, if applicable','s2m');
+  const s3k=Object.keys(g).filter(k=>k.startsWith('s3-')).sort((a,b)=>Number(a.slice(3))-Number(b.slice(3)));
+  if(s3k.length)rows+=s3k.map(k=>{const id=k.slice(3);const c=S3CATS.find(c=>String(c[0])===id);return row('Scope 3, category '+id+(c?' '+c[1]:' (not set)'),k);}).join('');
+  else rows+=`<tr><td>Scope 3, each category</td><td class="num">—</td><td class="muted small">No category lines yet.</td></tr>`;
+  const sum=(keys)=>{let t=0,any=false,bad=0;keys.forEach(k=>{if(g[k]){if(g[k].n-g[k].bad){t+=g[k].t;any=true;}bad+=g[k].bad;}});return {t,any,bad};};
+  const s3keys=Object.keys(g).filter(k=>k.startsWith('s3-'));
+  const A=sum(['s1','s2l',...s3keys]),B=sum(['s1','s2m',...s3keys]);
+  rows+=`<tr><td><b>Sum of lines with location-based Scope 2</b></td><td class="num"><b>${A.any?fmt(A.t,4):'—'}</b></td><td class="small muted">Partial: only lines entered and resolved</td></tr>`;
+  if(g.s2m)rows+=`<tr><td><b>Sum of lines with market-based Scope 2</b></td><td class="num"><b>${B.any?fmt(B.t,4):'—'}</b></td><td class="small muted">Partial: only lines entered and resolved</td></tr>`;
+  $('#totBody').innerHTML=rows;
+  const notes=[];
+  if(g.s2m&&!g.s2l)notes.push('<div class="callout warn">Market-based Scope 2 is entered without a location-based result. Keep the location-based figure even when contractual instruments lower the market-based one.</div>');
+  notes.push('<div class="callout small">Location-based and market-based Scope 2 are never added together. A blank row means unknown, not zero. Unresolved lines stay out of totals until their quantity or factor is supplied.</div>');
+  const est=Object.keys(g).filter(k=>k!=='s2m').reduce((a,k)=>a+g[k].est,0);
+  if(A.any&&A.t>0)notes.push(`<div class="callout small">Estimated or average-data lines are ${fmt(est/A.t*100,0)}% of the resolved total with location-based Scope 2. Track this share and avoid implying more precision than the data supports.</div>`);
+  $('#totNotes').innerHTML=notes.join('');
+  renderIntensity();
+}
+function renderIntensity(){
+  const I=S.intensity;const n=num(I.num),d=num(I.den);const el=$('#intOut');
+  if(n==null||d==null||d===0){el.innerHTML='Enter an emissions numerator and a production denominator to see an intensity.';return;}
+  const per=n*1000/d;const u={kg:'kg',t:'tonne',m:'metre',pcs:'piece'}[I.unit];
+  let h=`${fmt(n,4)} tCO2e ÷ ${fmt(d,4)} ${u}${I.unit==='kg'||I.unit==='t'?' of output':''} = <span class="big">${fmt(per,4)} kgCO2e per ${u}</span>`;
+  if(I.def)h+=`<br>Production defined as: ${esc(I.def)}`;
+  const gw=num(I.garm);
+  if(gw!=null&&(I.unit==='kg'||I.unit==='t')){const kgPerKg=I.unit==='kg'?per:per/1000;const est=kgPerKg*gw/1000;
+    h+=`<br><br>Garment of ${fmt(gw,2)} g: ${fmt(kgPerKg,4)} kgCO2e/kg × ${fmt(gw/1000,4)} kg = <span class="big">${fmt(est,4)} kgCO2e</span><br><span class="warnline">Facility allocation screening estimate only. It is not a product footprint: fibre, other stages, use, end of life and product rules are outside it.</span>`;}
+  el.innerHTML=h;
+}
+
+/* ---------- report ---------- */
+function reportLabel(){
+  const e=S.eng;const g=totals();
+  const unres=Object.values(g).reduce((a,x)=>a+x.bad,0);
+  const s3un=S3CATS.filter(c=>!(S.scope3[c[0]]||{}).status).length;
+  const evOpen=EVID.filter((x,i)=>!['full','na'].includes((S.evidence[i]||{}).st)).length;
+  const ex=S.lines.some(l=>l.ex);
+  const assured=!!(e.assuranceStatement&&String(e.assuranceProvider||'').trim());
+  const reviewed=!!(String(e.reviewer||'').trim()&&String(e.reviewScope||'').trim());
+  let label='Draft';
+  if(ex)label='Draft';else if(assured)label='Externally assured';else if(reviewed)label='Reviewed inventory';else if(e.mostlyEst)label='Screening estimate';
+  const b=[];
+  if(ex)b.push('Example lines are still in the register.');
+  if(!S.lines.filter(l=>!l.ex).length)b.push('No lines of your own in the register yet.');
+  if(unres)b.push(`${unres} register line(s) are unresolved.`);
+  if(s3un)b.push(`${s3un} Scope 3 categories are not yet assessed.`);
+  if(evOpen)b.push(`${evOpen} evidence items are not yet received in full or marked not applicable.`);
+  if(!reviewed)b.push('No named reviewer and review scope recorded, so it cannot be called reviewed.');
+  if(!assured)b.push('No signed external assurance statement recorded.');
+  if(!e.approach)b.push('Consolidation approach not yet decided.');
+  return {label,blockers:b,assured,reviewed};
+}
+function buildReport(){
+  const e=S.eng,L=reportLabel(),g=totals();
+  const val=k=>{const x=g[k];if(!x)return '';const c=x.n-x.bad;return c?fmt(x.t,4):'';};
+  const cov=k=>{const x=g[k];if(!x)return 'Not yet assessed';return `${x.n} line(s)`+(x.bad?`, ${x.bad} unresolved`:'');};
+  const sumA=(()=>{let t=0,a=false;Object.keys(g).forEach(k=>{if(k==='s2m')return;if(g[k].n-g[k].bad){t+=g[k].t;a=true;}});return a?fmt(t,4):'';})();
+  const sumB=(()=>{if(!g.s2m)return '';let t=0,a=false;Object.keys(g).forEach(k=>{if(k==='s2l')return;if(g[k].n-g[k].bad){t+=g[k].t;a=true;}});return a?fmt(t,4):'';})();
+  const s3rows=Object.keys(g).filter(k=>k.startsWith('s3-')).sort((a,b)=>Number(a.slice(3))-Number(b.slice(3))).map(k=>{const id=k.slice(3);const c=S3CATS.find(c=>String(c[0])===id);return `| Scope 3, category ${id}${c?' '+c[1]:''} | ${val(k)} | ${cov(k)} |`;});
+  const sc=evalScreen(S.profile);
+  let md=`# Textile GHG inventory and review
+
+Company/entity: ${e.company||''}
+Period / base year: ${e.period||''} / ${e.baseYear||''}
+Prepared/reviewed by and dates: ${e.reviewer||''}
+Status and exact review scope: **${L.label}**${e.reviewScope?'. Checked: '+e.reviewScope:''}
+Official-source verification as of: 30 October 2026 (dated snapshot, not a live legal database)
+Assurance provider/scope/conclusion, or no external assurance: ${L.assured?`${e.assuranceProvider}. ${e.assuranceScope||'Scope not recorded.'}`:'No external assurance'}
+
+## Purpose and coverage
+
+Consolidation approach: ${e.approach||'not yet decided'}. Buyer methodology: ${e.buyer||'none stated'}.
+${S.lines.some(l=>l.ex)?'\nNOTE: example lines with fictional factors are still in the register. Remove them before using any figure.\n':''}
+Material unresolved gaps:
+${L.blockers.map(b=>'- '+b).join('\n')||'- None recorded'}
+
+## Results: gross emissions
+
+Location-based and market-based Scope 2 are not added together. Blank means unknown.
+
+| Metric | tCO2e | Coverage/limitations |
+|---|---|---|
+| Scope 1 | ${val('s1')} | ${cov('s1')} |
+| Scope 2 location-based | ${val('s2l')} | ${cov('s2l')} |
+| Scope 2 market-based, if applicable | ${val('s2m')} | ${cov('s2m')} |
+${s3rows.join('\n')||'| Scope 3, each applicable category separately |  | Not yet assessed |'}
+| Combined total with location-based Scope 2 | ${sumA} | Partial: resolved lines only |
+| Combined total with market-based Scope 2 | ${sumB} | ${g.s2m?'Partial: resolved lines only':'Not applicable or not assessed'} |
+
+## Scope 3 screen
+
+| Category | Assessment | Note |
+|---|---|---|
+${S3CATS.map(c=>{const v=S.scope3[c[0]]||{};return `| ${c[0]}. ${c[1]} | ${S3ST[v.status||'']} | ${String(v.note||'').replace(/\n/g,' ').replace(/\|/g,'/')} |`;}).join('\n')}
+
+## Legal/commercial screen
+
+${screenTable(sc.items.filter(i=>i.kind!=='Out of scope'))}
+
+Keep direct legal duties, supply-chain information requests and voluntary commitments distinct. Outstanding checks: consolidated law and national law for each row. This is not a blanket EU compliance conclusion.
+
+## Findings and action plan
+
+| Priority | Finding and evidence | Effect on result or claim | Action | Owner / due date | Closure evidence |
+|---|---|---|---|---|---|
+${L.blockers.map((b,i)=>`| ${i<3?'High':'Medium'} | ${b} | Limits what can be claimed | | | |`).join('\n')}
+
+## Appendices
+
+Attach boundary and source map, activity and factor registers, category screen, calculation file, evidence index, source verification log, assumptions and exclusions, change log and any genuine assurance statement.
+`;
+  return md;
+}
+function screenTable(items){
+  const rows=items.map(i=>`| ${i.name} | ${i.entity} | ${(i.facts||[]).join('; ')} | ${STATUS[i.status][0]}. ${i.dates} | ${i.src.join(', ')||'n/a'}, accessed 30 Oct 2026 | ${i.why} | ${(i.next||[]).join(' ')} |`);
+  return `| Instrument or buyer requirement | Responsible entity/jurisdiction | Triggering facts | Status and applicable dates | Provision/source/access date | Conclusion/uncertainty | Next action |\n|---|---|---|---|---|---|---|\n${rows.join('\n')}`;
+}
+function renderReport(){
+  const L=reportLabel();
+  $('#labelCard').innerHTML=`<span class="eyebrow">Label your evidence supports</span><div class="label-big">${esc(L.label)}</div>
+   <p class="small muted">${L.label==='Externally assured'?'An external assurance statement is recorded. State its scope and level, because it may cover less than the whole report. This portal cannot verify it.':L.label==='Reviewed inventory'?'Reviewed means only what the named reviewer actually checked. It does not mean accredited assurance.':'Labels follow the evidence actually held: draft, screening estimate, reviewed inventory, externally assured.'}</p>
+   ${L.blockers.length?`<div><b class="small">What prevents a stronger conclusion</b><ul class="small" style="margin:6px 0 0;padding-left:18px">${L.blockers.map(b=>`<li>${esc(b)}</li>`).join('')}</ul></div>`:'<p class="small ok-t">No open blockers recorded.</p>'}`;
+  $('#reportMd').textContent=buildReport();
+}
+
+/* ---------- copy / exports ---------- */
+function toast(m){const h=$('#toastHost');h.innerHTML=`<div class="toast" role="status">${esc(m)}</div>`;setTimeout(()=>{h.innerHTML='';},2200);}
+function copyText(txt){
+  const fallback=()=>{const h=$('#copyHost');h.innerHTML=`<div class="copybox" role="dialog" aria-label="Copy text"><b>This viewer blocked the copy button. Select the text below and copy it.</b><textarea id="cbTxt" readonly></textarea><div class="row"><button class="btn small" type="button" id="cbClose">Close</button></div></div>`;const t=$('#cbTxt');t.value=txt;t.focus();t.select();$('#cbClose').onclick=()=>{h.innerHTML='';};};
+  try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>toast('Copied to clipboard'),fallback);return;}}catch(e){}
+  fallback();
+}
+function exportFor(kind){
+  if(kind==='scope3csv'){return [csv(['category_id','category_name','textile_screening_prompt','applicability','minimum_boundary_check','method_and_evidence','coverage_and_estimates','exclusion_and_rationale','gap_action_owner'])].concat(S3CATS.map(c=>{const v=S.scope3[c[0]]||{};const st=v.status||'';return csv([c[0],c[1],c[2],S3ST[st],'',st==='est'?v.note:'','',(st==='na'||st==='excl')?v.note:'',st==='gap'?v.note:'']);})).join('\n');}
+  if(kind==='evidencemd'){return `| Evidence | Status | Owner | Coverage and notes |\n|---|---|---|---|\n`+EVID.map((t,i)=>{const v=S.evidence[i]||{};return `| ${t} | ${EVST[v.st||'']} | ${v.owner||''} | ${String(v.note||'').replace(/\|/g,'/')} |`;}).join('\n');}
+  if(kind==='registercsv'){const head=['record_id','entity','site','period_start','period_end','process','source_description','scope','scope3_category','quantity','activity_unit','source_evidence_id','factor_id','conversion_equation','allocation_basis','coverage_percent','data_status','calculation_equation','result_tco2e','uncertainty_or_gap','owner','review_status'];
+    return [csv(head)].concat(S.lines.map((l,i)=>{const r=compute(l);const sc={s1:'1',s2l:'2 location-based',s2m:'2 market-based',s3:'3'}[l.scope];
+      const q=l.method==='af'?l.qty:l.method==='fr'?l.mass:'';const u=l.method==='af'?l.unit:l.method==='fr'?l.massU+' × km':'kg by gas';
+      return csv(['R'+(i+1),'',l.site||'','','',l.desc||'',(l.ex?'EXAMPLE: ':'')+(l.desc||''),sc,l.cat||'',q,u,l.evid||'',l.facSrc||'','',  '',l.cov||'',l.dstat,r.err?'':r.eq,r.t==null?'':r.t,(r.err?'Unresolved: '+r.err+' ':'')+(l.gap||''),'',l.ex?'example':'draft']);})).join('\n');}
+  if(kind==='screenmd'){return screenTable(evalScreen(S.profile).items.filter(i=>i.kind!=='Out of scope'));}
+  if(kind==='reportmd'){return buildReport();}
+  return '';
+}
+
+
+/* ---------- Excel export ---------- */
+let DL=null;
+function buildWorkbook(){
+  const X=window.XLSX;if(!X)throw new Error('xlsx library not loaded');
+  const wb=X.utils.book_new();
+  const L=reportLabel(),g=totals(),e=S.eng;
+  const val=k=>{const x=g[k];return (x&&x.n-x.bad)?Math.round(x.t*1e6)/1e6:'';};
+  const cov=k=>{const x=g[k];if(!x)return 'Not yet assessed';return x.n+' line(s)'+(x.bad?', '+x.bad+' unresolved':'');};
+  const sum=[['Textile GHG inventory workbook'],[],
+   ['Company or entity',e.company||''],['Reporting period',e.period||''],['Base year',e.baseYear||''],['Consolidation approach',e.approach||'Not yet decided'],
+   ['Status label',L.label],['Official-source snapshot','30 October 2026 (dated snapshot, not a live legal database)'],[],
+   ['Metric','tCO2e','Coverage and limitations'],
+   ['Scope 1',val('s1'),cov('s1')],['Scope 2 location-based',val('s2l'),cov('s2l')],['Scope 2 market-based, if applicable',val('s2m'),cov('s2m')]];
+  Object.keys(g).filter(k=>k.startsWith('s3-')).sort((a,b)=>Number(a.slice(3))-Number(b.slice(3))).forEach(k=>{const id=k.slice(3);const c=S3CATS.find(c=>String(c[0])===id);sum.push(['Scope 3, category '+id+(c?' '+c[1]:''),val(k),cov(k)]);});
+  sum.push([],['Location-based and market-based Scope 2 are not added together. Blank means unknown, not zero. Totals include resolved lines only.']);
+  if(S.lines.some(l=>l.ex))sum.push(['NOTE: example lines with fictional factors are still in the register. Remove them before using any figure.']);
+  sum.push([],['What prevents a stronger conclusion']);L.blockers.forEach(b=>sum.push([b]));
+  const w1=X.utils.aoa_to_sheet(sum);w1['!cols']=[{wch:44},{wch:16},{wch:60}];X.utils.book_append_sheet(wb,w1,'Summary');
+  const reg=X.read(exportFor('registercsv'),{type:'string'});X.utils.book_append_sheet(wb,reg.Sheets[reg.SheetNames[0]],'Activity register');
+  const s3=X.read(exportFor('scope3csv'),{type:'string'});X.utils.book_append_sheet(wb,s3.Sheets[s3.SheetNames[0]],'Scope 3 screen');
+  const ev=[['Evidence','Status','Owner','Coverage and notes']].concat(EVID.map((t,i)=>{const v=S.evidence[i]||{};return [t,EVST[v.st||''],v.owner||'',v.note||''];}));
+  X.utils.book_append_sheet(wb,X.utils.aoa_to_sheet(ev),'Evidence');
+  const lg=[['Instrument or buyer requirement','Responsible entity or jurisdiction','Triggering facts','Status','Applicable dates','Sources (accessed 30 Oct 2026)','Conclusion and uncertainty','Next action']].concat(
+    evalScreen(S.profile).items.filter(i=>i.kind!=='Out of scope').map(i=>[i.name,i.entity,(i.facts||[]).join('; '),STATUS[i.status][0],i.dates,i.src.join(', ')||'n/a',i.why,(i.next||[]).join(' ')]));
+  X.utils.book_append_sheet(wb,X.utils.aoa_to_sheet(lg),'Legal screen');
+  return X.write(wb,{bookType:'xlsx',type:'array'});
+}
+async function downloadXlsx(){
+  let buf;
+  try{buf=buildWorkbook();}catch(err){toast('Could not create the workbook. Use the copy buttons instead.');return;}
+  const name='textile-ghg-workbook'+(S.eng.company?'-'+S.eng.company.replace(/[^A-Za-z0-9]+/g,'-').slice(0,30):'')+'.xlsx';
+  if(DL){
+    try{await DL.save({filename:name,data:buf});toast('Workbook saved');}
+    catch(err){const c=err&&err.code;if(c==='declined')return;toast(c==='rate_limited'?'Another save prompt is open. Try again in a moment.':'Could not save the workbook. Use the copy buttons instead.');}
+    return;
+  }
+  /* Standalone copy of the page (opened as a file or hosted elsewhere): ordinary browser download */
+  try{
+    const blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),4000);toast('Workbook downloaded');
+  }catch(err){toast('Download failed. Use the copy buttons instead.');}
+}
+function initDownloads(){
+  const showBtns=()=>$$('[data-dl]').forEach(b=>{b.hidden=false;});
+  try{
+    if(window.claude&&window.claude.use){
+      window.claude.use('downloads').then(d=>{DL=d;if(d)showBtns();},()=>{});
+    }else{showBtns();}
+  }catch(e){showBtns();}
+}
+/* ---------- binding ---------- */
+function hydrate(root){
+  $$('[data-bind]',root||document).forEach(el=>{
+    const v=getp(el.dataset.bind);
+    if(el.type==='checkbox')el.checked=!!v;
+    else if(el.type==='radio')el.checked=(String(v)===el.value);
+    else el.value=(v==null?'':v);
+  });
+}
+function refresh(path){
+  if(path.startsWith('profile.')){updateFormVis();renderScreen();}
+  else if(path.startsWith('scope3.')){renderScope3Meta();}
+  else if(path.startsWith('evidence.')){renderEvMeta();}
+  else if(path.startsWith('draft.')){updateDraftUI();}
+  else if(path.startsWith('intensity.')){renderIntensity();}
+  else if(path.startsWith('eng.')){renderReport();}
+  save();
+}
+function onBind(e){
+  const el=e.target.closest&&e.target.closest('[data-bind]');if(!el)return;
+  if(el.type==='radio'&&!el.checked)return;
+  const path=el.dataset.bind;
+  const val=el.type==='checkbox'?el.checked:el.value;
+  setp(path,val);
+  if(path.startsWith('profile.')){S.profile.example=false;S.profile.msg='';}
+  refresh(path);
+}
+
+/* ---------- init ---------- */
+function init(){
+  load();
+  renderMap();renderDates();renderClaims();renderScope3();renderEvidence();initCalcForm();
+  $('#srcAcc').innerHTML=SRC_ACC.map(r=>`<tr><td><span class="tag">${r[0]}</span></td><td><a href="${r[2]}" target="_blank" rel="noopener">${esc(r[1])}</a></td><td>${esc(r[3])}</td></tr>`).join('');
+  $('#srcEU').innerHTML=SRC_EU.map(r=>`<tr><td><span class="tag">${r[0]}</span></td><td><a href="${r[2]}" target="_blank" rel="noopener">${esc(r[1])}</a></td><td>${esc(r[3])}</td></tr>`).join('');
+  hydrate();updateFormVis();updateDraftUI();
+
+  document.addEventListener('input',onBind);
+  document.addEventListener('change',onBind);
+  document.addEventListener('click',e=>{
+    const t=e.target.closest('button,a');if(!t)return;
+    if(t.dataset.dl){downloadXlsx();return;}
+    if(t.dataset.copy){copyText(exportFor(t.dataset.copy));return;}
+    if(t.dataset.inst){$$('#dateChips .chip').forEach(c=>c.setAttribute('aria-pressed',c===t));drawDates(t.dataset.inst);return;}
+    if(t.dataset.claim){claimFilter=t.dataset.claim;renderClaims();return;}
+    if(t.dataset.tab){$$('#invTabs .chip').forEach(c=>c.setAttribute('aria-pressed',c===t));['map','scope3','evidence'].forEach(k=>{$('#t-'+k).hidden=(k!==t.dataset.tab);});return;}
+    if(t.dataset.del){S.lines=S.lines.filter(l=>l.id!==t.dataset.del);save();renderCalc();return;}
+  });
+  $('#claimQ').addEventListener('input',e=>{claimQ=e.target.value;renderClaims();});
+  $('#preset').addEventListener('change',e=>{const k=e.target.value;if(!k)return;S.profile=newProfile(k);hydrate($('#screenForm'));updateFormVis();renderScreen();save();e.target.value='';});
+  $('#clearProfile').addEventListener('click',()=>{S.profile=newProfile(null);hydrate($('#screenForm'));updateFormVis();renderScreen();save();});
+  $('#addLine').addEventListener('click',()=>{
+    const l=draftLine();if(!String(l.desc).trim()){$('#addHint').textContent='Describe the source first.';$('#d-desc').focus();return;}
+    S.lines.push(l);const d=S.draft;d.desc='';d.qty='';d.mass='';d.dist='';d.g={co2:{m:'',w:d.g.co2.w},ch4:{m:'',w:d.g.ch4.w},n2o:{m:'',w:d.g.n2o.w}};d.gap='';d.evid='';
+    hydrate($('#calcForm'));save();renderCalc();updateDraftUI();toast('Line added to the register');
+  });
+  $('#clearEx').addEventListener('click',()=>{S.lines=S.lines.filter(l=>!l.ex);save();renderCalc();});
+  $('#fillNum').addEventListener('click',()=>{const g=totals();let t=0,a=false;['s1','s2l'].forEach(k=>{if(g[k]&&g[k].n-g[k].bad){t+=g[k].t;a=true;}});if(!a){toast('No resolved Scope 1 or 2 lines yet');return;}S.intensity.num=String(Math.round(t*1e6)/1e6);hydrate($('#v-calculator'));renderIntensity();save();});
+  window.addEventListener('hashchange',onHash);
+  initDownloads();
+  onHash();
+}
+window.__tcn={buildWorkbook,evalScreen,compute,cnPointers,reportLabel,get S(){return S;},set S(v){S=v;}};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+</body></html>
